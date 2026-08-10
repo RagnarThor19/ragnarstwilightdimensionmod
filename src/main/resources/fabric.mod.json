@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "ragnarstwilightdimension",
+	"version": "${version}",
+	"name": "Ragnars Twilight Dimension",
+	"description": "Adds the twilight dimension to minecraft",
+	"authors": [
+		"Ragnar Thor Melsted"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/ragnarstwilightdimension/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimension"
+		],
+		"fabric-datagen": [
+			"net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimensionDataGenerator"
+		],
+        "client":  [
+            "net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimensionClient"
+        ]
+	},
+	"mixins": [
+		"ragnarstwilightdimension.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
