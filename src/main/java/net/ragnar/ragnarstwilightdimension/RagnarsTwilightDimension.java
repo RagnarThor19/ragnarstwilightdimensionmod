@@ -1,6 +1,8 @@
 package net.ragnar.ragnarstwilightdimension;
 
 import net.fabricmc.api.ModInitializer;
+import net.ragnar.ragnarstwilightdimension.portal.TwilightPortal;
+import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +17,8 @@ public class RagnarsTwilightDimension implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-
+		TwilightPortal.register();
+		LOGGER.info("Twilight dimension loaded ({})", ModDimensions.TWILIGHT_WORLD.getValue());
 	}
 
 }

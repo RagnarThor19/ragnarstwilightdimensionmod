@@ -5,6 +5,9 @@
 	"mixins": [
 		"ExampleMixin"
 	],
+	"client": [
+		"client.BackgroundRendererMixin"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	},
