@@ -1,0 +1,26 @@
+Drop the three track files in THIS folder, named exactly:
+
+    twilight_1.ogg
+    twilight_2.ogg
+    twilight_3.ogg
+
+Format
+------
+* OGG Vorbis (not .mp3, not .wav, and not OGG Opus - Minecraft only decodes Vorbis).
+* Stereo is fine here, and is what you want. Mono is only required for *positional*
+  sounds, the kind that get quieter as you walk away from them. Dimension music is
+  played non-positionally, straight into the Music channel, so it never attenuates.
+  Vanilla's own music tracks are all stereo. Mono files will still work, they will
+  just sound narrower.
+* Any normal sample rate is fine (44.1 kHz or 48 kHz).
+
+Once the files are in place they are picked up automatically - the sound events are
+already declared in assets/ragnarstwilightdimension/sounds.json. Until then the game
+logs a harmless "file missing for sound event" warning on startup.
+
+Testing a single track without travelling to the dimension:
+
+    /playsound ragnarstwilightdimension:music.twilight_1 music @s
+
+This folder can be deleted from version control once the real files are added; the
+placeholder only exists so the directory survives an empty checkout.

@@ -1,0 +1,90 @@
+{
+	"music.twilight": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/twilight_1",
+				"stream": true
+			},
+			{
+				"name": "ragnarstwilightdimension:music/twilight_2",
+				"stream": true
+			},
+			{
+				"name": "ragnarstwilightdimension:music/twilight_3",
+				"stream": true
+			}
+		]
+	},
+	"music.twilight_1": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/twilight_1",
+				"stream": true
+			}
+		]
+	},
+	"music.twilight_2": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/twilight_2",
+				"stream": true
+			}
+		]
+	},
+	"music.twilight_3": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/twilight_3",
+				"stream": true
+			}
+		]
+	},
+	"ambience.twilight": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_1",
+				"stream": true
+			},
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_2",
+				"stream": true
+			},
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_3",
+				"stream": true
+			}
+		]
+	},
+	"ambience.twilight_1": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_1",
+				"stream": true
+			}
+		]
+	},
+	"ambience.twilight_2": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_2",
+				"stream": true
+			}
+		]
+	},
+	"ambience.twilight_3": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_3",
+				"stream": true
+			}
+		]
+	}
+}

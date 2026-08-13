@@ -1,0 +1,36 @@
+Custom ambience beds for the twilight dimension go in THIS folder, named:
+
+    twilight_1.ogg
+    twilight_2.ogg
+    twilight_3.ogg
+
+Format
+------
+* OGG Vorbis, same as the music. Stereo is fine - these are played into the Ambient
+  channel and are not positional, so they never fade with distance.
+* These are already declared in assets/ragnarstwilightdimension/sounds.json, so no
+  JSON edits are needed. Until the files exist the game logs a harmless
+  "file missing for sound event" warning on startup - that warning disappearing is
+  a good sign the filenames are right.
+
+Turning them on
+---------------
+They are registered but deliberately NOT in the rotation yet, so you don't get silent
+events while the folder is empty. Once the files are in, open
+
+    src/main/java/.../sound/TwilightAmbience.java
+
+and set
+
+    INCLUDE_CUSTOM_AMBIENCE = true
+
+That adds them to the random ambience roll. All three sit behind one sound event
+(ambience.twilight), so the game picks one at random each time, exactly like the music.
+
+Testing a single file without waiting for a roll:
+
+    /playsound ragnarstwilightdimension:ambience.twilight_1 ambient @s
+
+Want more than three? Add another .ogg here, then add a matching entry to the
+"ambience.twilight" sounds list in sounds.json and a register("ambience.twilight_4")
+line in ModSounds. Nothing else needs to change.
