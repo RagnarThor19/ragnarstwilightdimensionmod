@@ -1,7 +1,12 @@
 package net.ragnar.ragnarstwilightdimension;
 
 import net.fabricmc.api.ModInitializer;
+import net.ragnar.ragnarstwilightdimension.command.SilhouetteCommand;
+import net.ragnar.ragnarstwilightdimension.entity.ModEntities;
+import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
 import net.ragnar.ragnarstwilightdimension.portal.TwilightPortal;
+import net.ragnar.ragnarstwilightdimension.sound.ModSounds;
+import net.ragnar.ragnarstwilightdimension.sound.TwilightAmbience;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 import org.slf4j.Logger;
@@ -17,7 +22,12 @@ public class RagnarsTwilightDimension implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModSounds.initialize();
+		ModEntities.initialize();
 		TwilightPortal.register();
+		SilhouetteSpawner.register();
+		TwilightAmbience.register();
+		SilhouetteCommand.register();
 		LOGGER.info("Twilight dimension loaded ({})", ModDimensions.TWILIGHT_WORLD.getValue());
 	}
 

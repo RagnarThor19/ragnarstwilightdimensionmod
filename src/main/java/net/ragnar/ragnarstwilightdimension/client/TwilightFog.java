@@ -1,12 +1,10 @@
 package net.ragnar.ragnarstwilightdimension.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
-
 /**
  * Fog distances for the twilight dimension. Fog is a shader uniform, so shortening it costs nothing
  * to render - it just hides everything past {@link #FOG_END} behind the biome fog colour.
+ *
+ * <p>The fog <em>colour</em> is not set here; it comes from {@code fog_color} in the biome JSON.
  */
 public final class TwilightFog {
 	/** Distance (in blocks) where the fog starts fading in. */
@@ -16,10 +14,5 @@ public final class TwilightFog {
 	public static final float FOG_END = 11.0F;
 
 	private TwilightFog() {
-	}
-
-	public static boolean isInTwilight() {
-		ClientWorld world = MinecraftClient.getInstance().world;
-		return world != null && world.getRegistryKey() == ModDimensions.TWILIGHT_WORLD;
 	}
 }

@@ -6,7 +6,9 @@
 		"ExampleMixin"
 	],
 	"client": [
-		"client.BackgroundRendererMixin"
+		"client.BackgroundRendererMixin",
+		"client.MinecraftClientMusicMixin",
+		"client.MusicTrackerAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

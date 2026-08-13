@@ -5,6 +5,7 @@ import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.FogShape;
+import net.ragnar.ragnarstwilightdimension.client.TwilightClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightFog;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +23,7 @@ public class BackgroundRendererMixin {
 	private static void twilight$applyLiminalFog(Camera camera, BackgroundRenderer.FogType fogType,
 												 float viewDistance, boolean thickFog, float tickDelta,
 												 CallbackInfo ci) {
-		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightFog.isInTwilight()) {
+		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightClient.isInTwilight()) {
 			return;
 		}
 
