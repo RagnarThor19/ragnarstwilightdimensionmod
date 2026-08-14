@@ -4,9 +4,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -20,6 +25,10 @@ import net.minecraft.world.World;
  *
  * <p>Visibility is handled on the render side: the renderer refuses to draw it inside
  * {@code MIN_VISIBLE_DISTANCE}, so even if you somehow get next to one there is nothing to look at.
+ *
+ * <p>The one exception is the grave watcher - see {@link #watchGrave(BlockPos)} - which stands at a
+ * gravestone rather than out in the fog, ignores you until you are almost touching it, and is drawn
+ * at any distance because the whole point of it is to be walked right up to.
  */
 public class SilhouetteEntity extends MobEntity {
 	/** How far away it will still track a player with its head. */
@@ -51,6 +60,22 @@ public class SilhouetteEntity extends MobEntity {
 	private static final int SPRINT_TICKS = 20;
 	private static final int SINK_TICKS = 30;
 
+	/**
+	 * Tracked rather than kept server-side only, because both the renderer and the client-side facing
+	 * code behave differently for a grave watcher and both run before any of its state is asked for.
+	 */
+	private static final TrackedData<Boolean> GRAVE_WATCHER =
+			DataTracker.registerData(SilhouetteEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+	/**
+	 * How close a player has to get before a grave watcher notices them. Small on purpose - it should
+	 * be possible to stand and look at it from across the clearing without anything happening.
+	 */
+	private static final double NOTICE_DISTANCE = 2.0;
+
+	/** Half a second between the head coming round and the rest of it leaving. */
+	private static final int NOTICE_DELAY_TICKS = 10;
+
 	/** How it leaves when disturbed. */
 	public enum Exit {
 		SPRINT,
@@ -64,11 +89,23 @@ public class SilhouetteEntity extends MobEntity {
 	private Vec3d exitDirection = Vec3d.ZERO;
 	private int ticksAlive;
 
+	/** Grave watchers only: the sign it is reading. */
+	private BlockPos gazeTarget;
+
+	/** Grave watchers only: ticks since it noticed a player, or -1 while it is still undisturbed. */
+	private int noticeTicks = -1;
+
 	public SilhouetteEntity(EntityType<? extends SilhouetteEntity> type, World world) {
 		super(type, world);
 		this.setInvulnerable(true);
 		this.setSilent(true);
 		this.setAiDisabled(true);
+	}
+
+	@Override
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(GRAVE_WATCHER, false);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -81,6 +118,17 @@ public class SilhouetteEntity extends MobEntity {
 	@Override
 	public void tick() {
 		super.tick();
+
+		if (this.isGraveWatcher()) {
+			// Unlike the wandering kind, every bit of a grave watcher's facing is decided by what it is
+			// doing rather than by where the player is, and the client has no way to know which of the
+			// two it is mid-way through. So the server drives all of it and the client just interpolates
+			// the rotation packets, which is what turns the snap into a fast turn rather than a jump.
+			if (!this.getWorld().isClient) {
+				tickGraveWatcher();
+			}
+			return;
+		}
 
 		// Tracked on both sides: the client keeps the head smooth between rotation packets.
 		faceNearestPlayer();
@@ -144,6 +192,114 @@ public class SilhouetteEntity extends MobEntity {
 		}
 	}
 
+	public boolean isGraveWatcher() {
+		return this.dataTracker.get(GRAVE_WATCHER);
+	}
+
+	/**
+	 * Turns this one into the figure that stands at a gravestone.
+	 *
+	 * <p>It looks at the sign instead of at you, it never wanders off or times out, and it stays where
+	 * it was put across saves. It only reacts when someone gets within {@link #NOTICE_DISTANCE}: the
+	 * head comes round first, and half a second later the rest of it bolts.
+	 *
+	 * @param sign the block position of the sign it is reading - may be null if the grave has since
+	 *             been dug up, in which case it simply keeps whatever direction it was left facing
+	 */
+	public void watchGrave(BlockPos sign) {
+		this.dataTracker.set(GRAVE_WATCHER, true);
+		this.gazeTarget = sign;
+
+		// Nothing else stops it despawning: the lifetime and abandon-distance checks in tick() are on
+		// the branch this one never reaches, and vanilla's mob cap would otherwise remove it the first
+		// time the player walks far enough away.
+		this.setPersistent();
+
+		faceGazeTarget();
+	}
+
+	private void tickGraveWatcher() {
+		this.ticksAlive++;
+
+		if (this.exitTicks >= 0) {
+			// Keeps staring while it goes.
+			snapHeadTo(this.getWorld().getClosestPlayer(this, LOOK_RANGE));
+			tickExit();
+			return;
+		}
+
+		if (this.noticeTicks >= 0) {
+			PlayerEntity player = this.getWorld().getClosestPlayer(this, LOOK_RANGE);
+			snapHeadTo(player);
+
+			if (++this.noticeTicks >= NOTICE_DELAY_TICKS) {
+				if (player == null) {
+					// Whoever it was is gone. Back to the sign.
+					this.noticeTicks = -1;
+					faceGazeTarget();
+				} else {
+					forceExit(Exit.SPRINT);
+					beginExit(player);
+				}
+			}
+			return;
+		}
+
+		faceGazeTarget();
+
+		PlayerEntity intruder = this.getWorld().getClosestPlayer(this, NOTICE_DISTANCE);
+		if (intruder != null) {
+			this.noticeTicks = 0;
+			snapHeadTo(intruder);
+		}
+	}
+
+	/** Points the whole figure - body, head and eyes - down the grave at the sign. */
+	private void faceGazeTarget() {
+		if (this.gazeTarget == null) {
+			return;
+		}
+
+		double dx = this.gazeTarget.getX() + 0.5 - this.getX();
+		double dz = this.gazeTarget.getZ() + 0.5 - this.getZ();
+		double dy = this.gazeTarget.getY() + 0.5 - this.getEyeY();
+		double horizontal = Math.sqrt(dx * dx + dz * dz);
+
+		float yaw = (float) (MathHelper.atan2(dz, dx) * MathHelper.DEGREES_PER_RADIAN) - 90.0F;
+		float pitch = (float) (-(MathHelper.atan2(dy, horizontal) * MathHelper.DEGREES_PER_RADIAN));
+
+		this.setYaw(yaw);
+		this.setBodyYaw(yaw);
+		this.setHeadYaw(yaw);
+		this.setPitch(pitch);
+
+		// Held level with the current values the whole time it is undisturbed, so that the moment it
+		// does look up there is a real previous angle for the client to interpolate away from - that
+		// interpolation is the snap.
+		this.prevYaw = yaw;
+		this.prevBodyYaw = yaw;
+		this.prevHeadYaw = yaw;
+		this.prevPitch = pitch;
+	}
+
+	/**
+	 * Head and eyes only. The body is left squared up to the grave, which is the entire effect - a
+	 * figure that has not moved a muscle except to turn its face towards you.
+	 */
+	private void snapHeadTo(PlayerEntity player) {
+		if (player == null) {
+			return;
+		}
+
+		double dx = player.getX() - this.getX();
+		double dz = player.getZ() - this.getZ();
+		double dy = player.getEyeY() - this.getEyeY();
+		double horizontal = Math.sqrt(dx * dx + dz * dz);
+
+		this.setHeadYaw((float) (MathHelper.atan2(dz, dx) * MathHelper.DEGREES_PER_RADIAN) - 90.0F);
+		this.setPitch((float) (-(MathHelper.atan2(dy, horizontal) * MathHelper.DEGREES_PER_RADIAN)));
+	}
+
 	/** Pins the next exit instead of rolling for it. Used by {@code /silhouette} for testing. */
 	public void forceExit(Exit exit) {
 		this.forcedExit = exit;
@@ -202,13 +358,46 @@ public class SilhouetteEntity extends MobEntity {
 	public boolean damage(DamageSource source, float amount) {
 		if (!this.getWorld().isClient && this.exitTicks < 0) {
 			PlayerEntity player = this.getWorld().getClosestPlayer(this, LOOK_RANGE);
-			if (player != null) {
+
+			if (this.isGraveWatcher()) {
+				// Anyone close enough to swing at it is well inside the notice distance anyway, so this
+				// only matters for arrows. Same reaction either way: look up, then go.
+				if (this.noticeTicks < 0) {
+					this.noticeTicks = 0;
+					snapHeadTo(player);
+				}
+			} else if (player != null) {
 				beginExit(player);
 			} else {
 				this.discard();
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+
+		if (this.isGraveWatcher()) {
+			nbt.putBoolean("GraveWatcher", true);
+			if (this.gazeTarget != null) {
+				nbt.putInt("GazeX", this.gazeTarget.getX());
+				nbt.putInt("GazeY", this.gazeTarget.getY());
+				nbt.putInt("GazeZ", this.gazeTarget.getZ());
+			}
+		}
+	}
+
+	@Override
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+
+		if (nbt.getBoolean("GraveWatcher")) {
+			watchGrave(nbt.contains("GazeX")
+					? new BlockPos(nbt.getInt("GazeX"), nbt.getInt("GazeY"), nbt.getInt("GazeZ"))
+					: null);
+		}
 	}
 
 	@Override

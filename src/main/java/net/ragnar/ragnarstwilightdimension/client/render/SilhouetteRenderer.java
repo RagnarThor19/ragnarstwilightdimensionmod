@@ -37,7 +37,11 @@ public class SilhouetteRenderer extends MobEntityRenderer<SilhouetteEntity, Play
 
 	@Override
 	public boolean shouldRender(SilhouetteEntity entity, Frustum frustum, double x, double y, double z) {
-		if (entity.squaredDistanceTo(x, y, z) < MIN_VISIBLE_DISTANCE * MIN_VISIBLE_DISTANCE) {
+		// The grave watcher is the one you are meant to walk right up to. Its head only comes round at
+		// two blocks, well inside the cutoff, so applying the cutoff would hide it at precisely the
+		// moment there is finally something to see.
+		if (!entity.isGraveWatcher()
+				&& entity.squaredDistanceTo(x, y, z) < MIN_VISIBLE_DISTANCE * MIN_VISIBLE_DISTANCE) {
 			return false;
 		}
 		return super.shouldRender(entity, frustum, x, y, z);

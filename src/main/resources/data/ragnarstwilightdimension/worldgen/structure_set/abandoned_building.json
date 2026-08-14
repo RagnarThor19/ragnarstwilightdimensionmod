@@ -1,15 +1,15 @@
 {
 	"structures": [
 		{
-			"structure": "ragnarstwilightdimension:twilight_ruin",
+			"structure": "ragnarstwilightdimension:abandoned_building",
 			"weight": 1
 		}
 	],
 	"placement": {
 		"type": "minecraft:random_spread",
 		"spread_type": "linear",
-		"spacing": 32,
-		"separation": 11,
-		"salt": 776420531
+		"spacing": 48,
+		"separation": 16,
+		"salt": 419285077
 	}
 }

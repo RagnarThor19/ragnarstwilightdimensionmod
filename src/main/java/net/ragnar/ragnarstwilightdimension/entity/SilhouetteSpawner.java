@@ -53,8 +53,10 @@ public final class SilhouetteSpawner {
 	}
 
 	private static void trySpawnNear(ServerWorld world, ServerPlayerEntity player) {
+		// Grave watchers don't count: they are part of the scenery and never leave on their own, so
+		// letting them occupy the slot would silence the wandering kind for anyone camped near a grave.
 		Box crowding = player.getBoundingBox().expand(CROWDING_RADIUS);
-		if (!world.getEntitiesByClass(SilhouetteEntity.class, crowding, e -> true).isEmpty()) {
+		if (!world.getEntitiesByClass(SilhouetteEntity.class, crowding, e -> !e.isGraveWatcher()).isEmpty()) {
 			return;
 		}
 
