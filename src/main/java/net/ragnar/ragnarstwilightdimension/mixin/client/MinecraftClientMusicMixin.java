@@ -2,6 +2,7 @@ package net.ragnar.ragnarstwilightdimension.mixin.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.MusicSound;
+import net.ragnar.ragnarstwilightdimension.client.BloodMoonClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightMusic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +20,7 @@ public class MinecraftClientMusicMixin {
 	@Inject(method = "getMusicType", at = @At("HEAD"), cancellable = true)
 	private void twilight$useTwilightMusic(CallbackInfoReturnable<MusicSound> cir) {
 		if (TwilightClient.isInTwilight()) {
-			cir.setReturnValue(TwilightMusic.TWILIGHT);
+			cir.setReturnValue(BloodMoonClient.isActive() ? TwilightMusic.BLOODMOON : TwilightMusic.TWILIGHT);
 		}
 	}
 }

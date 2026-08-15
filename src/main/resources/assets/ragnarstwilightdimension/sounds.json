@@ -43,6 +43,15 @@
 			}
 		]
 	},
+	"music.bloodmoon": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/bloodmoon_music",
+				"stream": true
+			}
+		]
+	},
 	"ambience.twilight": {
 		"category": "ambient",
 		"sounds": [
@@ -84,6 +93,56 @@
 			{
 				"name": "ragnarstwilightdimension:ambience/twilight_3",
 				"stream": true
+			}
+		]
+	},
+	"ambience.leviathan": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound1",
+				"stream": true,
+				"attenuation_distance": 512
+			},
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound2",
+				"stream": true,
+				"attenuation_distance": 512
+			},
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound3",
+				"stream": true,
+				"attenuation_distance": 512
+			}
+		]
+	},
+	"ambience.leviathan_1": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound1",
+				"stream": true,
+				"attenuation_distance": 512
+			}
+		]
+	},
+	"ambience.leviathan_2": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound2",
+				"stream": true,
+				"attenuation_distance": 512
+			}
+		]
+	},
+	"ambience.leviathan_3": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/large_sound3",
+				"stream": true,
+				"attenuation_distance": 512
 			}
 		]
 	}

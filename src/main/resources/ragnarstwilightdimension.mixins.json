@@ -3,7 +3,8 @@
 	"package": "net.ragnar.ragnarstwilightdimension.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"LootableInventoryMixin"
 	],
 	"client": [
 		"client.BackgroundRendererMixin",

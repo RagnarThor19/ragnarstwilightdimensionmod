@@ -26,6 +26,18 @@ public final class TwilightMusic {
 	public static final MusicSound TWILIGHT =
 			new MusicSound(ModSounds.MUSIC_TWILIGHT, MIN_GAP_TICKS, MAX_GAP_TICKS, true);
 
+	/**
+	 * Both longer than the event itself, which is the point: the track runs exactly once and can
+	 * never start a second time part-way through. The event is over before either of these could
+	 * elapse, and its end cuts the tracker anyway.
+	 */
+	private static final int BLOODMOON_MIN_GAP_TICKS = 2400;
+	private static final int BLOODMOON_MAX_GAP_TICKS = 3600;
+
+	/** Plays instead of {@link #TWILIGHT} for as long as the event is up. */
+	public static final MusicSound BLOODMOON =
+			new MusicSound(ModSounds.MUSIC_BLOODMOON, BLOODMOON_MIN_GAP_TICKS, BLOODMOON_MAX_GAP_TICKS, true);
+
 	private static boolean wasInTwilight;
 
 	private TwilightMusic() {

@@ -4,10 +4,16 @@ import net.fabricmc.api.ModInitializer;
 import net.ragnar.ragnarstwilightdimension.command.GravestoneCommand;
 import net.ragnar.ragnarstwilightdimension.command.SilhouetteCommand;
 import net.ragnar.ragnarstwilightdimension.entity.ModEntities;
+import net.ragnar.ragnarstwilightdimension.command.BloodMoonCommand;
+import net.ragnar.ragnarstwilightdimension.command.WandererCommand;
+import net.ragnar.ragnarstwilightdimension.event.BloodMoon;
+import net.ragnar.ragnarstwilightdimension.network.BloodMoonPayload;
 import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
+import net.ragnar.ragnarstwilightdimension.entity.WandererSpawner;
 import net.ragnar.ragnarstwilightdimension.portal.TwilightPortal;
 import net.ragnar.ragnarstwilightdimension.sound.ModSounds;
 import net.ragnar.ragnarstwilightdimension.sound.TwilightAmbience;
+import net.ragnar.ragnarstwilightdimension.sound.TwilightLeviathan;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.feature.ModFeatures;
 
@@ -27,10 +33,16 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		ModSounds.initialize();
 		ModEntities.initialize();
 		ModFeatures.initialize();
+		BloodMoonPayload.register();
 		TwilightPortal.register();
 		SilhouetteSpawner.register();
+		WandererSpawner.register();
 		TwilightAmbience.register();
+		TwilightLeviathan.register();
+		BloodMoon.register();
 		SilhouetteCommand.register();
+		WandererCommand.register();
+		BloodMoonCommand.register();
 		GravestoneCommand.register();
 		LOGGER.info("Twilight dimension loaded ({})", ModDimensions.TWILIGHT_WORLD.getValue());
 	}
