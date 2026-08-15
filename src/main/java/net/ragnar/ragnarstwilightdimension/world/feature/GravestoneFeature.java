@@ -36,8 +36,34 @@ import net.ragnar.ragnarstwilightdimension.entity.SilhouetteEntity;
  * cover the blocks, but the watcher has to be given the exact position of the sign it is looking at
  * so it is aimed at the writing rather than merely pointed the right way, and doing that from a
  * template means a marker block and a second pass. Here it is one method.
+ *
+ * <p>The same class builds both {@linkplain Kind kinds} of grave, because the second one is only
+ * interesting for being identical to the first.
  */
 public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
+	/**
+	 * Which of the two this instance lays out.
+	 *
+	 * <p>They are the same three columns, built by the same code, off the same ground checks. What
+	 * separates them is entirely what is missing from the second.
+	 */
+	public enum Kind {
+		/** The ordinary one: mound intact, chest under it, someone standing at the foot. */
+		BURIED,
+
+		/**
+		 * One that has already been dug out.
+		 *
+		 * <p>The headstone and its blank sign are still there, and so is the coarse dirt at the foot.
+		 * What is gone is the mound over the chest and the chest itself, leaving the hole open two
+		 * blocks deep - and whoever was standing at the end of it.
+		 *
+		 * <p>Nothing states who opened it or when. The only fact on offer is that somebody got here
+		 * first, and that this is the one grave in the dimension with nothing left in it.
+		 */
+		OPENED
+	}
+
 	/**
 	 * A thin wrapper that rolls {@code minecraft:chests/stronghold_library} itself rather than
 	 * reproducing its contents, so anything another mod injects into the stronghold library turns up
@@ -49,24 +75,40 @@ public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
 	/** How far down {@link #findGround} will look for the surface before giving up on a column. */
 	private static final int GROUND_SEARCH_DEPTH = 4;
 
-	public GravestoneFeature(Codec<DefaultFeatureConfig> codec) {
+	private final Kind kind;
+
+	public GravestoneFeature(Codec<DefaultFeatureConfig> codec, Kind kind) {
 		super(codec);
+		this.kind = kind;
 	}
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		Random random = context.getRandom();
-		return place(context.getWorld(), context.getOrigin(), Direction.fromHorizontal(random.nextInt(4)), random);
+		return place(context.getWorld(), context.getOrigin(),
+				Direction.fromHorizontal(random.nextInt(4)), random, this.kind);
+	}
+
+	/** Lays out an ordinary grave. */
+	public static boolean place(StructureWorldAccess world, BlockPos origin, Direction toGrave, Random random) {
+		return place(world, origin, toGrave, random, Kind.BURIED);
 	}
 
 	/**
 	 * Lays out one grave.
 	 *
+	 * <p>Every check below is run for both kinds, including the ones that only matter for what an
+	 * opened grave no longer has - the solid block under the mound, the headroom at the foot. An
+	 * opened grave is supposed to look like an ordinary one that somebody reached first, so it has to
+	 * be built where an ordinary one could have stood.
+	 *
 	 * @param origin  the first free block above the terrain, at the headstone's column
 	 * @param toGrave the direction the grave runs in, leading away from the headstone
+	 * @param kind    whether this one still has anything in it
 	 * @return whether the ground was flat and clear enough to build on
 	 */
-	public static boolean place(StructureWorldAccess world, BlockPos origin, Direction toGrave, Random random) {
+	public static boolean place(StructureWorldAccess world, BlockPos origin, Direction toGrave, Random random,
+								Kind kind) {
 		BlockPos head = findGround(world, origin);
 		BlockPos mound = findGround(world, origin.offset(toGrave));
 		BlockPos foot = findGround(world, origin.offset(toGrave, 2));
@@ -94,9 +136,16 @@ public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
 			return false;
 		}
 
+		boolean opened = kind == Kind.OPENED;
+
 		world.setBlockState(headstone, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_ALL);
-		world.setBlockState(mound, Blocks.COARSE_DIRT.getDefaultState(), Block.NOTIFY_ALL);
 		world.setBlockState(foot, Blocks.COARSE_DIRT.getDefaultState(), Block.NOTIFY_ALL);
+
+		// The mound is the tell. Intact, it is the patch of turned earth over the chest; opened, it has
+		// been taken off and the hole below it is left standing empty.
+		world.setBlockState(mound,
+				opened ? Blocks.AIR.getDefaultState() : Blocks.COARSE_DIRT.getDefaultState(),
+				Block.NOTIFY_ALL);
 
 		// Anything the vegetation pass left standing on the mound comes off, so there is a clear line
 		// of sight from the watcher to the sign.
@@ -119,6 +168,15 @@ public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
 			NbtCompound nbt = signEntity.createNbt(world.getRegistryManager());
 			nbt.putBoolean("is_waxed", true);
 			signEntity.read(nbt, world.getRegistryManager());
+		}
+
+		if (opened) {
+			// Whatever was in the ground here is not in the ground here any more. Cleared explicitly
+			// rather than left alone, because the block being dug out of is solid by the check above.
+			world.setBlockState(chest, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+
+			// And no watcher. There is nothing left to stand over.
+			return true;
 		}
 
 		world.setBlockState(chest, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, toGrave), Block.NOTIFY_ALL);

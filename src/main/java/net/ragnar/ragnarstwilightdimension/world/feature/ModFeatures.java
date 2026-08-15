@@ -15,7 +15,17 @@ public final class ModFeatures {
 	public static final Feature<DefaultFeatureConfig> GRAVESTONE = Registry.register(
 			Registries.FEATURE,
 			Identifier.of(RagnarsTwilightDimension.MOD_ID, "gravestone"),
-			new GravestoneFeature(DefaultFeatureConfig.CODEC));
+			new GravestoneFeature(DefaultFeatureConfig.CODEC, GravestoneFeature.Kind.BURIED));
+
+	/**
+	 * The same grave, already dug out. Referenced by {@code worldgen/configured_feature/open_grave.json}
+	 * and placed far more rarely than the ordinary kind - it only means anything if you have seen
+	 * several of the intact ones first.
+	 */
+	public static final Feature<DefaultFeatureConfig> OPEN_GRAVE = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "open_grave"),
+			new GravestoneFeature(DefaultFeatureConfig.CODEC, GravestoneFeature.Kind.OPENED));
 
 	private ModFeatures() {
 	}

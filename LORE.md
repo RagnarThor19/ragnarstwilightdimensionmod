@@ -112,6 +112,21 @@ Rules for it, in descending order of importance:
    correspondence, and a correspondence has an author.
 3. Leave it unsigned. A signed book has a name on it, and a name is a person, and there are no people.
 
+### Somebody got here first
+
+Rarely — four times rarer than an ordinary grave — a grave generates that has **already been dug
+out**. **[built]** — `GravestoneFeature.Kind.OPENED`
+
+It is the same grave, built by the same code, off the same ground checks. The headstone is there, the
+blank sign is there, the coarse dirt at the foot is there. What is missing is the mound over the
+chest, the chest, and the figure that stands at every other one.
+
+**Meaning:** nothing is stated, and nothing should be. The scene is only legible to someone who has
+already found several intact ones, which is what the rarity is for — the first grave a player sees
+must never be an open one. What it says, to a player who has been prising the lids off the others, is
+that they are not the first person to do this. And that the watcher who stands over a full grave does
+not stay once it is empty.
+
 ### The ground is at somebody else's sea level
 
 The terrain density gradient runs y58 → y74, so the surface sits around **y64** — the Overworld's
@@ -228,11 +243,6 @@ The same distance you got.
 
 The surface keeps pretending to be the Overworld. Below some depth the stone becomes endstone. The
 disguise is skin-deep, and digging is what finds out. Makes "stopped halfway" vertical and literal.
-
-### The open grave
-
-One gravestone, somewhere, with the hole dug, no chest in it, a blank sign, and a grave watcher
-standing at it. The only unfilled grave in the world.
 
 ### Numbered signs
 

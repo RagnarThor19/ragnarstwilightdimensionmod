@@ -15,9 +15,12 @@ import net.minecraft.world.Heightmap;
 import net.ragnar.ragnarstwilightdimension.world.feature.GravestoneFeature;
 
 /**
- * {@code /gravestone [distance]} - lays out one grave on the ground ahead of whoever ran it, for
- * testing, rather than waiting for one to turn up in the world. The grave runs away from you, so you
- * walk up to the headstone first and the watcher is looking back towards you down its length.
+ * {@code /gravestone [open] [distance]} - lays out one grave on the ground ahead of whoever ran it,
+ * for testing, rather than waiting for one to turn up in the world. The grave runs away from you, so
+ * you walk up to the headstone first and the watcher is looking back towards you down its length.
+ *
+ * <p>{@code open} builds the dug-out kind instead. Worth having, because the natural roll for those
+ * is rare enough that finding one to look at is not a plan.
  *
  * <p>Requires permission level 2, matching {@code /silhouette}.
  */
@@ -31,13 +34,22 @@ public final class GravestoneCommand {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
 				dispatcher.register(CommandManager.literal("gravestone")
 						.requires(source -> source.hasPermissionLevel(2))
-						.executes(context -> place(context, DEFAULT_DISTANCE))
+						.executes(context -> place(context, DEFAULT_DISTANCE, GravestoneFeature.Kind.BURIED))
 						.then(CommandManager.argument("distance", DoubleArgumentType.doubleArg(1.0, 64.0))
 								.executes(context -> place(context,
-										DoubleArgumentType.getDouble(context, "distance"))))));
+										DoubleArgumentType.getDouble(context, "distance"),
+										GravestoneFeature.Kind.BURIED)))
+						.then(CommandManager.literal("open")
+								.executes(context -> place(context, DEFAULT_DISTANCE,
+										GravestoneFeature.Kind.OPENED))
+								.then(CommandManager.argument("distance", DoubleArgumentType.doubleArg(1.0, 64.0))
+										.executes(context -> place(context,
+												DoubleArgumentType.getDouble(context, "distance"),
+												GravestoneFeature.Kind.OPENED))))));
 	}
 
-	private static int place(CommandContext<ServerCommandSource> context, double distance) {
+	private static int place(CommandContext<ServerCommandSource> context, double distance,
+							 GravestoneFeature.Kind kind) {
 		ServerCommandSource source = context.getSource();
 
 		// The dedicated-server console has no world attached to its command source, so this has to
@@ -60,14 +72,15 @@ public final class GravestoneCommand {
 		int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z);
 		BlockPos head = new BlockPos(x, y, z);
 
-		if (!GravestoneFeature.place(world, head, Direction.fromRotation(yawDegrees), world.getRandom())) {
+		if (!GravestoneFeature.place(world, head, Direction.fromRotation(yawDegrees), world.getRandom(), kind)) {
 			source.sendError(Text.literal(
 					"No flat ground at " + x + ", " + y + ", " + z + " - try a different distance."));
 			return 0;
 		}
 
+		String what = kind == GravestoneFeature.Kind.OPENED ? "An open grave" : "A gravestone";
 		source.sendFeedback(
-				() -> Text.literal("A gravestone is standing at " + x + ", " + y + ", " + z),
+				() -> Text.literal(what + " is standing at " + x + ", " + y + ", " + z),
 				false);
 		return 1;
 	}
