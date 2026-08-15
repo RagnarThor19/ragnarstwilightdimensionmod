@@ -7,6 +7,7 @@ import net.ragnar.ragnarstwilightdimension.entity.ModEntities;
 import net.ragnar.ragnarstwilightdimension.command.BloodMoonCommand;
 import net.ragnar.ragnarstwilightdimension.command.WandererCommand;
 import net.ragnar.ragnarstwilightdimension.event.BloodMoon;
+import net.ragnar.ragnarstwilightdimension.event.TwilightRespawn;
 import net.ragnar.ragnarstwilightdimension.network.BloodMoonPayload;
 import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.WandererSpawner;
@@ -40,6 +41,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		TwilightAmbience.register();
 		TwilightLeviathan.register();
 		BloodMoon.register();
+		TwilightRespawn.register();
 		SilhouetteCommand.register();
 		WandererCommand.register();
 		BloodMoonCommand.register();

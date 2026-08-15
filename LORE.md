@@ -38,7 +38,8 @@ but ***"is any of this actually here"***. Every mechanic below should be answera
 Constraints. Breaking one of these costs more than whatever it buys.
 
 1. **Nothing here is raw.** No ore, no water, no weather, no animals. Nothing grows and nothing
-   renews. The only renewable resource in the dimension is graves. **[built]** — see
+   renews. The only renewable resource in the dimension is graves, and the player is one of the two
+   things that makes more of them. **[built]** — see
    `worldgen/noise_settings/twilight.json` (`ore_veins_enabled: false`, `aquifers_enabled: false`) and
    `worldgen/biome/twilight_plains.json` (`has_precipitation: false`, every spawner list empty).
 2. **The place never confirms anything.** Compasses and clocks spin — the dimension is
@@ -126,6 +127,51 @@ already found several intact ones, which is what the rarity is for — the first
 must never be an open one. What it says, to a player who has been prising the lids off the others, is
 that they are not the first person to do this. And that the watcher who stands over a full grave does
 not stay once it is empty.
+
+### You get one too
+
+Nothing is dropped in the Twilight. A player who dies here is **buried where they fell** — the same
+three blocks, built by the same code as every other grave, with everything they were carrying in the
+chest under the mound and a figure standing at the foot of it. **[built]** — `PlayerGrave`,
+`GravestoneFeature.Kind.PLAYER`
+
+Two differences from a generated one, and no others. The chest is a **double** chest, running the
+length of the grave so the second half is under the foot as well, because a player carries more than
+the dead did. And the sign is **not blank**: it has their name on it.
+
+**Meaning:** the row of graves the player has spent the whole dimension robbing is a row they are now
+in. It is stated by the building rather than by any text — the grave is not a death marker with a
+convenience chest in it, it is the same object as the ones they have been prising the lids off, and
+the only way to get their own things back is to do to their own grave exactly what they have been
+doing to everybody else's. The watcher does not know the difference either. It stands over yours the
+same way, and it leaves the same way when you get close.
+
+That name is the one name anywhere in the dimension, and it is the one that gives nothing away: the
+player already knew it. It does not break §3's rule about the unsigned book — the book is somebody
+else's writing, and this is not writing at all, it is a label, put there by the same nothing that
+labels the other sixty-three with nothing.
+
+Rules for it:
+
+1. **Never say where it is.** No coordinates in chat, no marker, no beam. The recovery compass is
+   vanilla and is allowed to work; that is the player bringing an answer with them rather than the
+   world offering one.
+2. **Never make a second one.** A player who dies on the way back to their grave gets a second grave,
+   and the first one stays exactly where it is. Nothing merges, nothing expires, nothing is returned.
+3. **Never let it despawn.** Items on the floor last five minutes. The point of the grave is that it
+   lasts as long as every other grave here does, which is forever.
+
+### You are not asked
+
+Dying in the Twilight does not stop the game. There is no death screen, no *Respawn* button, no
+*Title Screen* button — the world simply changes to wherever you respawn, with no seam and no moment
+in between. **[built]** — `TwilightRespawn`, done by flipping vanilla's own `doImmediateRespawn` flag
+for players inside the dimension and handing it back when they leave.
+
+**Meaning:** it is the dream rule stated as directly as the mod ever states anything. A dream does not
+offer a menu at the point where it changes scene, and the change itself is the one part you never get
+to look at. It also removes the last place the game would have told the player something — the death
+screen names what killed you — so a death out in the fog stays as unexplained as everything else here.
 
 ### The ground is at somebody else's sea level
 
@@ -277,8 +323,10 @@ Rooms that were remembered from the inside.
 
 ## 8. Open questions
 
-- Does the player's own gravestone exist somewhere, already dug and already filled? Powerful once;
-  unrecoverable if it lands wrong.
+- ~~Does the player's own gravestone exist somewhere, already dug and already filled?~~ Answered, and
+  answered the other way round: it does not exist until they die, and then it is dug for them. See
+  §3, *You get one too*. The version where one is waiting for them before they have died is now taken
+  — the same beat cannot be spent twice.
 - Should the wanderer be going *somewhere specific* — the same bearing every time, world-wide — so a
   player who tracks several of them finds something at the convergence? Currently its bearing is
   random.
