@@ -39,10 +39,11 @@ public class MinecraftClientMusicMixin {
 			return;
 		}
 
-		// Its track outlives it by however long the file has left. Handing back the ordinary playlist
-		// here would cut it off mid-bar, so for as long as it is still going the dimension asks for a
+		// Its track outlives it by the length of the fade. Handing back the ordinary playlist here would
+		// stop it dead on the first tick of that fade - vanilla's tracker cuts whatever is playing the
+		// moment the client asks for something else - so while it is going down the dimension asks for a
 		// version of itself that is not allowed to interrupt anything.
-		cir.setReturnValue(WitnessClient.isMusicRingingOut()
+		cir.setReturnValue(WitnessClient.isMusicFading()
 				? TwilightMusic.TWILIGHT_RINGING_OUT
 				: TwilightMusic.TWILIGHT);
 	}

@@ -3,9 +3,16 @@ package net.ragnar.ragnarstwilightdimension.client;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.Channel;
 import net.minecraft.client.sound.MusicTracker;
+import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.SoundSystem;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.ragnar.ragnarstwilightdimension.mixin.client.MusicTrackerAccessor;
+import net.ragnar.ragnarstwilightdimension.mixin.client.SoundManagerAccessor;
+import net.ragnar.ragnarstwilightdimension.mixin.client.SoundSystemAccessor;
 import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
 import net.ragnar.ragnarstwilightdimension.network.WitnessPullPayload;
 
@@ -18,12 +25,21 @@ import net.ragnar.ragnarstwilightdimension.network.WitnessPullPayload;
  * a chunk unloading must never rely on being told that it ended.
  */
 public final class WitnessClient {
+	/**
+	 * How long the track takes to go, in ticks. Three seconds - the length of the death itself, so the
+	 * last of it is gone at about the moment the last of the thing playing it is.
+	 */
+	private static final int FADE_TICKS = 60;
+
+	/** How long the dimension stays quiet afterwards before its own playlist starts up again. */
+	private static final int SILENCE_AFTER_FADE = 400;
+
 	private static boolean music;
 	private static float fogEnd;
 	private static int holdTicks;
 
-	/** Set while its track is being left to finish of its own accord. See {@link #accept}. */
-	private static boolean ringingOut;
+	/** Ticks left of the fade, or 0 when nothing is fading. See {@link #tickFade}. */
+	private static int fadeTicks;
 
 	private static Vec3d pull = Vec3d.ZERO;
 	private static int pullTicks;
@@ -47,11 +63,13 @@ public final class WitnessClient {
 	}
 
 	/**
-	 * Whether its track is still playing after the fight is over, and is to be left alone until it
-	 * finishes. Read by the music mixin, which hands back a playlist that cannot interrupt it.
+	 * Whether its track is still playing after the fight is over, on its way down to nothing. Read by
+	 * the music mixin, which for as long as this is true hands back a playlist that is not allowed to
+	 * interrupt it - otherwise vanilla would cut the track on the first tick of the fade and there
+	 * would be nothing left to fade.
 	 */
-	public static boolean isMusicRingingOut() {
-		return ringingOut;
+	public static boolean isMusicFading() {
+		return fadeTicks > 0;
 	}
 
 	/** Where the fog should end, or 0 for the ordinary eleven. Read by the fog mixin. */
@@ -87,11 +105,10 @@ public final class WitnessClient {
 		// half second would mean the track restarts from the top twice a second and never plays.
 		if (music != wasMusic) {
 			if (!music && payload.fade()) {
-				// The one ending that is not a cut. Nothing is stopped and no timer is set: the track is
-				// simply left running, and the music mixin starts handing back a playlist that is not
-				// allowed to interrupt it - see TwilightMusic.TWILIGHT_RINGING_OUT. It ends when the file
-				// ends, which is the only ending in the dimension that is not decided by the dimension.
-				ringingOut = true;
+				// The one ending that is not a cut. Nothing is stopped here at all - the track is left
+				// running and turned down a little further every tick from now until there is none of it
+				// left. See tickFade.
+				fadeTicks = FADE_TICKS;
 			} else {
 				MusicTracker tracker = MinecraftClient.getInstance().getMusicTracker();
 				tracker.stop();
@@ -104,11 +121,8 @@ public final class WitnessClient {
 	}
 
 	private static void onClientTick(MinecraftClient client) {
-		// Asked rather than timed, because how long is a question about the file and not about the
-		// fight. It also unsticks itself: a fight that ended while the tracker happened to be between
-		// tracks was never ringing out at all, and clears on the next tick.
-		if (ringingOut && !client.getMusicTracker().isPlayingType(TwilightMusic.WITNESS)) {
-			ringingOut = false;
+		if (fadeTicks > 0) {
+			tickFade(client);
 		}
 
 		if (pullTicks > 0) {
@@ -131,14 +145,70 @@ public final class WitnessClient {
 		}
 	}
 
+	/**
+	 * Turns the track down one tick's worth, and stops it outright when there is nothing left of it.
+	 *
+	 * <p>Reaching the source directly is the only way this can be done. Music is played as a plain
+	 * non-tickable sound instance, so its volume is settled the moment it starts and vanilla never
+	 * looks at it again; the one method that appears to offer a way in,
+	 * {@code SoundSystem#updateSoundVolume}, ignores the volume it is given for every category except
+	 * master and recomputes from the player's own settings - see {@link SoundSystemAccessor}. So the
+	 * fade goes to the audio source, which affects that one sound and leaves every setting alone.
+	 *
+	 * <p>Squared on the way down, because volume is not heard the way it is measured: a straight ramp
+	 * spends most of its length in the part of the scale the ear barely separates and reads as the
+	 * sound holding steady and then vanishing near the end. Squaring pulls the drop early, which is
+	 * what a thing going quiet actually sounds like.
+	 *
+	 * <p>Anything that stops the track from under this - the player leaving the dimension, the file
+	 * ending on its own - simply ends the fade. There is nothing to turn down and nothing to put back.
+	 */
+	private static void tickFade(MinecraftClient client) {
+		MusicTracker tracker = client.getMusicTracker();
+
+		if (--fadeTicks <= 0) {
+			// All the way down, so it is stopped properly rather than left running at silence, and the
+			// dimension gets its own quiet back before the playlist returns.
+			fadeTicks = 0;
+			tracker.stop();
+			((MusicTrackerAccessor) tracker).setTimeUntilNextSong(SILENCE_AFTER_FADE);
+			return;
+		}
+
+		SoundInstance current = ((MusicTrackerAccessor) tracker).getCurrent();
+		if (current == null) {
+			fadeTicks = 0;
+			return;
+		}
+
+		SoundSystem system = ((SoundManagerAccessor) client.getSoundManager()).getSoundSystem();
+		Channel.SourceManager manager = ((SoundSystemAccessor) system).getSources().get(current);
+
+		if (manager == null || manager.isStopped()) {
+			fadeTicks = 0;
+			return;
+		}
+
+		float share = (float) fadeTicks / FADE_TICKS;
+
+		// The same sum vanilla does when it starts a sound, with the fade on the end of it, so the
+		// player's music slider still means what it meant a second ago. Master is not in here on
+		// purpose - that one is applied to the listener rather than to any one source.
+		float volume = MathHelper.clamp(
+				current.getVolume() * client.options.getSoundVolume(SoundCategory.MUSIC), 0.0F, 1.0F);
+
+		float faded = volume * share * share;
+		manager.run(source -> source.setVolume(faded));
+	}
+
 	private static void clear() {
 		music = false;
 		fogEnd = 0.0F;
 		holdTicks = 0;
 
-		// Whether the track is left running is decided by the packet that ends the fight, not here.
-		// This is the state going back to nothing, and nothing is the ordinary cut.
-		ringingOut = false;
+		// Whether the track is faded is decided by the packet that ends the fight, not here. This is the
+		// state going back to nothing, and nothing is the ordinary cut.
+		fadeTicks = 0;
 
 		// The legs go back with everything else. A fight that ended by the chunk unloading must not
 		// leave somebody walking north for the rest of the session.

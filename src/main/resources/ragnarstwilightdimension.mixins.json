@@ -13,7 +13,9 @@
 		"client.KeyboardInputMixin",
 		"client.LookLockMixin",
 		"client.MinecraftClientMusicMixin",
-		"client.MusicTrackerAccessor"
+		"client.MusicTrackerAccessor",
+		"client.SoundManagerAccessor",
+		"client.SoundSystemAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

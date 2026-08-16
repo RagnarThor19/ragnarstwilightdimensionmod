@@ -66,9 +66,10 @@ import java.util.UUID;
  * <p>It also learns. From the halfway point its own blows are as hard as the hardest one it has been
  * hit with, so the better the gear brought to it, the worse the thing swinging back.
  *
- * <p>When it finally goes, it does not fall over. It stops, raises the arm one last time, and for
- * three seconds the fog opens out to sixty-four blocks - the only time in the dimension the room is
- * ever bigger than eleven. Nothing is there. Then it falls.
+ * <p>When it finally goes, it does not fall over. It stands for a moment with the arm still up, and
+ * then it goes straight down into the ground at a walking pace until there is nothing above the
+ * grass. No stagger and no body left lying in the field - it was there before the player was, and the
+ * only thing that changes is that it is not there any more. What it leaves is left at the surface.
  *
  * @see net.ragnar.ragnarstwilightdimension.entity.PaleFigureEntity the blank one, which is the same
  *      idea from the other end: a copy with nothing on it yet, closing the distance to get a look
@@ -183,16 +184,24 @@ public class WitnessEntity extends PathAwareEntity {
 	/** Leave it alone this long and it forgets the whole thing and goes back to the sky, whole. */
 	private static final int FORGET_TICKS = 100;
 
-	/** How long it takes to go: three seconds of pointing at nothing, then it falls. */
+	/** How long it takes to go: three seconds of pointing at nothing, then it goes under. */
 	private static final int DYING_TICKS = 60;
 
+	/** How long it stands there before it starts to go down. One second, with the arm still up. */
+	private static final int SINK_HOLD_TICKS = 20;
+
 	/**
-	 * How far the room opens as it goes, in blocks.
+	 * How far it goes down each tick once it has started, in blocks.
 	 *
-	 * <p>The one exception to the eleven, and the only one there is ever going to be. Held for the whole
-	 * of {@link #DYING_TICKS} and then let go of - see {@link #tickDying}.
+	 * <p>Worked out from the two above rather than typed, so it is always exactly buried by the time
+	 * the three seconds are up however either of them is retuned.
+	 *
+	 * <p>The margin is measured against the arm and not against {@link #HEIGHT}. The hitbox stops at
+	 * the top of its head, but the thing is pointing - the raised hand reaches something like four
+	 * tenths of a block above that, and a sink that only cleared the hitbox would leave a finger
+	 * sticking out of the field forever.
 	 */
-	private static final float DEATH_FOG = 64.0F;
+	private static final double SINK_PER_TICK = (HEIGHT + 1.0) / (DYING_TICKS - SINK_HOLD_TICKS);
 
 
 	/** How far up it points, in degrees above the horizon. */
@@ -242,6 +251,12 @@ public class WitnessEntity extends PathAwareEntity {
 	private int moveTicks;
 	private int quarter;
 	private float hardestHit;
+
+	/**
+	 * The height it was standing at when it started to go, kept so that what it leaves behind can be
+	 * left there rather than three blocks under. NaN until it starts dying.
+	 */
+	private double surfaceY = Double.NaN;
 	private final Set<UUID> affected = new HashSet<>();
 	private final List<SilhouetteEntity> watchers = new ArrayList<>();
 
@@ -761,29 +776,36 @@ public class WitnessEntity extends PathAwareEntity {
 	}
 
 	/**
-	 * Three seconds of dying, which it spends pointing.
+	 * Three seconds of dying, which it spends going into the ground.
 	 *
-	 * <p>The room opens a third of the way through: sixty-four blocks of visibility, once, in a
-	 * dimension whose entire character is that you cannot see eleven. What is out there is what was
-	 * always out there.
+	 * <p>It does not fall over. It stands for a second with the arm still up, and then it goes straight
+	 * down, at a walking pace, until there is nothing above the grass - no stagger, no topple, no body
+	 * left lying in the field. It was standing there before the player arrived and the only thing that
+	 * changes is that it is not standing there any more.
+	 *
+	 * <p>Kept ticking rather than left to vanilla's death animation because vanilla's is a fall, and a
+	 * fall is the one shape this must not have. What vanilla does get is the twenty ticks after
+	 * {@link #onDeath}, by which point it is already under and nobody can see it.
 	 */
 	private void tickDying() {
 		this.setVelocity(Vec3d.ZERO);
 		faceSky();
 		this.bar.setPercent(Math.max(0.0F, 1.0F - (float) this.stateTicks / DYING_TICKS));
 
-		// Every tick rather than every tenth - syncEffects makes the exception for this state alone.
-		// The room opening is the payoff of the whole fight and it has to land on the tick the arm goes
-		// up, not up to half a second afterwards.
+		// The fight outlasts the expiry the packets carry, so the fog and the music have to keep being
+		// re-stated through the whole of it or they lapse out from under the death.
 		syncEffects(true);
+
+		// Straight down, through whatever is in the way - noClip is set on the way into this state. It
+		// stops once it is buried; the ticks after that belong to vanilla and happen out of sight.
+		if (this.stateTicks > SINK_HOLD_TICKS && this.stateTicks <= DYING_TICKS) {
+			this.setPosition(this.getX(), this.getY() - SINK_PER_TICK, this.getZ());
+		}
 
 		if (this.stateTicks >= DYING_TICKS) {
 			this.bar.setVisible(false);
 			this.bar.clearPlayers();
 
-			// The fog is left open behind it. The packet that opened it carries its own expiry, so the
-			// room closes again on the client's own clock a moment after there is nothing to see.
-			//
 			// Killed through onDeath rather than through damage(), which refuses everything in this
 			// state by design - this is the one path out and it is the last thing that happens.
 			this.setHealth(0.0F);
@@ -841,6 +863,15 @@ public class WitnessEntity extends PathAwareEntity {
 		setTarget(null);
 		this.getNavigation().stop();
 		this.swingHand(Hand.MAIN_HAND);
+
+		// Where it was standing, which is where what it leaves behind belongs - see dropLoot. Taken here
+		// rather than at the end because by then it is under the ground it is being measured against.
+		this.surfaceY = this.getY();
+
+		// It goes down through the world rather than into it, and nothing is allowed to hold it up on
+		// the way: no collision, and no gravity to argue with the tick that is moving it.
+		this.noClip = true;
+		this.setNoGravity(true);
 		return true;
 	}
 
@@ -855,10 +886,15 @@ public class WitnessEntity extends PathAwareEntity {
 	 * <p>Written straight out rather than through a loot table on purpose. There is no
 	 * {@code entities/witness.json} to go looking for and nothing to accidentally inject into: what it
 	 * drops is decided here, next to the reason.
+	 *
+	 * <p>Left at the surface, not at the body. By the time this runs the thing is three blocks under
+	 * the field and dropping at its feet would bury the eyes in the ground with it - so the offset puts
+	 * them back up at {@link #surfaceY}, where the player watched it go down.
 	 */
 	@Override
 	protected void dropLoot(DamageSource source, boolean causedByPlayer) {
-		this.dropStack(new ItemStack(Items.ENDER_EYE, 2 + this.random.nextInt(3)));
+		float toSurface = Double.isNaN(this.surfaceY) ? 0.0F : (float) (this.surfaceY - this.getY());
+		this.dropStack(new ItemStack(Items.ENDER_EYE, 2 + this.random.nextInt(3)), toSurface);
 	}
 
 	// --- facing ---------------------------------------------------------------
@@ -945,7 +981,7 @@ public class WitnessEntity extends PathAwareEntity {
 			return;
 		}
 
-		if (this.age % 10 != 0 && getState() != State.DYING) {
+		if (this.age % 10 != 0) {
 			return;
 		}
 
@@ -995,17 +1031,12 @@ public class WitnessEntity extends PathAwareEntity {
 	 * pointing - the room is at its smallest exactly while the player has no say in where they are
 	 * walking.
 	 *
-	 * <p>And then, once, the opposite of all of it.
+	 * <p>Dying counts as fighting here. The room it closed stays closed until the body is gone, so
+	 * nothing about the last three seconds hands any of it back - the fog going out at the end is the
+	 * fight being over, not a thing the fight does.
 	 */
 	private float fightFog() {
-		// The three seconds it takes to fall are the only time the dimension is bigger than eleven
-		// blocks. Checked before the state gate below rather than after, because by now it has stopped
-		// fighting - this is not part of the fight, it is what the fight was for.
-		if (getState() == State.DYING) {
-			return DEATH_FOG;
-		}
-
-		if (getState() != State.FIGHTING) {
+		if (getState() != State.FIGHTING && getState() != State.DYING) {
 			return 0.0F;
 		}
 
@@ -1104,6 +1135,12 @@ public class WitnessEntity extends PathAwareEntity {
 		watchSky(nbt.getFloat("WatchYaw"));
 		this.setHealth(this.getMaxHealth());
 		this.setAiDisabled(true);
+
+		// Including one that was half way into the ground. NoGravity is vanilla's and does persist, so
+		// without this a witness saved mid-death comes back hanging in the air where it had got to.
+		this.noClip = false;
+		this.setNoGravity(false);
+		this.surfaceY = Double.NaN;
 	}
 
 	/** For {@code /witness}: everything the command needs to know without exposing the internals. */

@@ -34,11 +34,10 @@ public final class TwilightMusic {
 	 * but only if the something else says it may, which is the last argument here. This is
 	 * {@link #TWILIGHT} with that permission withheld.
 	 *
-	 * <p>It exists for one moment in the whole mod. When the witness dies its track is left to finish
-	 * rather than cut, and the only way to leave a track alone in vanilla's tracker is to hand back
-	 * something that is not allowed to replace it. When the file does run out, the ordinary gap above
-	 * takes over on its own and the dimension comes back a minute or three later, which is the right
-	 * silence to be standing in and is not worth setting by hand.
+	 * <p>It exists for one moment in the whole mod. When the witness dies its track is faded out over
+	 * three seconds instead of cut, and a fade needs the thing being faded to still be playing - so for
+	 * those three seconds the dimension asks for a version of itself that will not stop it. The fade
+	 * does the stopping itself when it reaches the bottom.
 	 */
 	public static final MusicSound TWILIGHT_RINGING_OUT =
 			new MusicSound(ModSounds.MUSIC_TWILIGHT, MIN_GAP_TICKS, MAX_GAP_TICKS, false);
