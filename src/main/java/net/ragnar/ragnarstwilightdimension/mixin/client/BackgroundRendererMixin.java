@@ -7,8 +7,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.client.world.ClientWorld;
 import net.ragnar.ragnarstwilightdimension.client.BloodMoonClient;
+import net.ragnar.ragnarstwilightdimension.client.StareClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightFog;
+import net.ragnar.ragnarstwilightdimension.client.WitnessClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,8 +51,12 @@ public class BackgroundRendererMixin {
 	@Inject(method = "render", at = @At("RETURN"))
 	private static void twilight$bloodMoonFogColour(Camera camera, float tickDelta, ClientWorld world,
 													int viewDistance, float skyDarkness, CallbackInfo ci) {
+		// The stare borrows this outright rather than having a red of its own. Both are the same three
+		// floats through the same path, so the two events cannot drift apart into "similar" reds, and
+		// the second one inherits the silhouetted-landscape trick described below for free - which is
+		// the entire reason there is anything to see at forty blocks in an eleven-block fog.
 		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightClient.isInTwilight()
-				|| !BloodMoonClient.isActive()) {
+				|| !(BloodMoonClient.isActive() || StareClient.isRed())) {
 			return;
 		}
 
@@ -71,8 +77,13 @@ public class BackgroundRendererMixin {
 			return;
 		}
 
+		// The witness is the one thing allowed to change the size of the room: it closes it a little
+		// further with every quarter of its health, and opens it to sixty-four blocks for three seconds
+		// as it dies. Everything else in the dimension lives with eleven.
+		float end = WitnessClient.fogEnd();
+
 		RenderSystem.setShaderFogStart(TwilightFog.FOG_START);
-		RenderSystem.setShaderFogEnd(TwilightFog.FOG_END);
+		RenderSystem.setShaderFogEnd(end > 0.0F ? end : TwilightFog.FOG_END);
 		RenderSystem.setShaderFogShape(FogShape.SPHERE);
 	}
 }

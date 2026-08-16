@@ -9,6 +9,9 @@
 	],
 	"client": [
 		"client.BackgroundRendererMixin",
+		"client.CameraShakeMixin",
+		"client.KeyboardInputMixin",
+		"client.LookLockMixin",
 		"client.MinecraftClientMusicMixin",
 		"client.MusicTrackerAccessor"
 	],

@@ -161,6 +161,46 @@ Rules for it:
 3. **Never let it despawn.** Items on the floor last five minutes. The point of the grave is that it
    lasts as long as every other grave here does, which is forever.
 
+### Something looks at you, and it is nearer every time
+
+Rarely — the wanderer's odds, about one an hour, rolled per player — the player's head is pulled up on
+its own. The world goes the same red as a blood moon in the same frame, the ground shakes, every
+control stops answering, and the view is pinned on a **blank white figure** hanging about fifty
+degrees above the horizon, at the exact bearing they were already facing, staring back. Something
+enormous is heard coming off it. Three seconds, then all of it ends in one frame and the sky is empty.
+**[built]** — `Stare`, `PaleFigureEntity`
+
+It happens to **one player**. The figure is a real entity anyone could see, but the fog leaves nothing
+to see for anybody who is not the one being shown it. To the rest of the server, someone stopped
+walking for three seconds while something screamed.
+
+**It is closer each time, and the count is kept forever:** 40 blocks, then 32, 24, 16, and finally 8,
+where it stays. The distances are chosen against the fog, which stops at eleven:
+
+| occasion | distance | what the player actually sees |
+|---|---|---|
+| 1st | 40 | an outline in flat red, no detail at all |
+| 2nd | 32 | the same outline, unmistakably larger |
+| 3rd | 24 | close enough to read as a person |
+| 4th | 16 | just outside the fog. Nearly resolved, still not lit |
+| 5th | 8 | **inside the fog.** Lit, and blank |
+
+The fifth is the only one where there is anything to look at, and what is there is nothing: no face,
+no clothes, no features. Four encounters of wanting a better look, answered.
+
+**Meaning:** see §4. The dimension has one template and does not know which player arrived. This is
+the template with nothing written on it yet, and it is closing the distance to get a better look.
+
+Rules for it:
+
+1. **Never explain the count.** No message, no advancement, no tally. A player who has seen it twice
+   should not be certain there was a first one.
+2. **Never let it move while it is up.** It hangs, it stares, it goes. The approach happens between
+   encounters and never during one — that it got closer is something the player works out by
+   remembering, which is the only way this beat pays.
+3. **Never put a sixth distance in.** Eight blocks is as near as it comes. Something that arrives has
+   to do something when it gets there, and the moment it does, it is a mob.
+
 ### You are not asked
 
 Dying in the Twilight does not stop the game. There is no death screen, no *Respawn* button, no
@@ -212,6 +252,7 @@ less it moves. The existing entities already form the ladder, in this order:
 |---|---|---|---|
 | **Blood steve** | 1.8 | sprints straight at you, 1 HP, dies to anything | just arrived — a touch undoes them |
 | **Silhouette** | 1.8 | watches from the fog line, leaves if approached | here long enough to have learned not to be verified |
+| **Witness** | 2.7 | stands still, points at a sky that is not drawn, wears *your* skin | stopped walking, never stopped knowing where it was going |
 | **Wanderer** | 4.0 | crosses in a straight line, never acknowledges you, more footfalls than legs | has somewhere to be, and is no longer only bipedal |
 | **Giant** | 20.0 | never moves. Turns to face you. That is all | has stopped going anywhere |
 | **Leviathan** | — | never seen. Heard at 512 blocks | past having a shape |
@@ -234,9 +275,82 @@ Because the dimension has one template. It knows a player arrived; it does not k
 player wears a custom skin, every copy of them here is wearing the default — the copy is wrong, and
 the player can see exactly how wrong, every time, without being told.
 
-- **[idea]** One entity, once, late in the game, rendered in the player's *own* skin. Needs the
-  client's skin texture in the renderer, so it is real work. It is the entire story in one frame and
-  should be spent carefully — probably once per world, and never during a blood moon.
+- ~~**[idea]** One entity, once, late in the game, rendered in the player's *own* skin.~~ **[built]**
+  — the witness, below. Spent, and spent once: it is the only entity in the mod that reads the
+  client's skin, and nothing else should ever be given that treatment.
+
+### The blank one
+
+The exception, and the only thing here that is not wearing the default skin: the figure from the
+stare is **white all over**, no face and no clothes. **[built]** — `PaleFigureEntity`
+
+If every Steve is the template already filled in, this is the template before anything has been
+written on it — which is why it is the one thing in the dimension that is *approaching*. It is not
+coming for the player. It is getting close enough to copy them.
+
+It is one half of a pair. The blank one is the copy being taken; **the witness**, below, is a copy
+that was finished a long time ago. One of them is closing the distance to get a look at the player's
+face, and the other has been standing in a field wearing it since before the player arrived.
+
+### The witness
+
+The one that is not watching you. It stands still with an arm up, jabbing at a fixed point in a sky
+this dimension does not draw, and it is **wearing the player's own skin**. **[built]** —
+`WitnessEntity`
+
+This is the idea above, spent. It is the only thing in the mod rendered in the player's real skin and
+it must stay the only one: two of them is a costume, one of them is a fact.
+
+Where it sits on the ladder is what it means. At 2.7 blocks it is between the silhouette and the
+wanderer — long enough here to have stopped moving at all, not long enough to have stopped *knowing
+where it was going*. The giant has forgotten there was anywhere to be. This one has not, and it is
+still pointing at it, and there is nothing there.
+
+**Never say what it sees.** Not in a book, not in a particle, not in a shape drawn in the sky at any
+range. The dimension type has no sky at all — `has_skylight` off, the nether's `sky_type` of NONE —
+so what it is pointing at is not merely too far away to see. It is not rendered. That is the answer
+and the player must never be told it.
+
+### The fare is sixty-four of anything
+
+Give the witness a full stack — any item, the count is the whole point — and it stops. The arm stays
+up, the head comes down onto the player, and five seconds later there is a boss bar. **[built]**
+
+**Meaning:** it is the only transaction in the dimension that runs the right way round. Everything
+else here is robbery — the graves, the chest in the house, the eyes taken off people who did not make
+it. This is the one thing a player can *give*, and the price is not an item, it is the number. What
+they get for it is a fight, which is exactly what they asked for by paying.
+
+Rules:
+
+1. **Never make the item matter.** Sixty-four dirt and sixty-four diamonds do the same thing. The
+   moment one item is worth more than another, the number stops being the point.
+2. **Never let it be provoked any other way.** It cannot be hurt before it is paid — a player can
+   stand there hitting it until the sword breaks and it will not look down.
+3. **Never refund it.** The stack is gone whether or not they win.
+
+### What the fight says
+
+Three things happen as it loses, and none of them are attacks. **[built]**
+
+At each quarter of its health it stops fighting altogether, plants itself, puts the arm back up and
+cannot be touched for two seconds. It is not blocking — it is *checking*. Whatever is up there is
+more important than the fight it is losing, right up until the last quarter, when the arm comes down
+and points at the player instead. That is the only moment in the mod where one of them acknowledges
+that the player is the more interesting of the two things in the field.
+
+And the room closes as it goes: eleven blocks of fog, then ten, eight, six, five. By the end the
+player is fighting something they can only see once it is already on them. The fog is the dimension's
+one honest measurement (§2, rule 5) and this is the one thing allowed to change it — because it is
+not changing the room, it is changing how much of it you are allowed.
+
+**Then it dies, and it does not fall over.** It stops, raises the arm one last time, and for three
+seconds the fog opens out to **sixty-four blocks**. It is the only time in the entire dimension that
+the room is bigger than eleven, and the only time the player will ever see the twilight at a distance.
+Nothing is there.
+
+That is the payoff and the refusal in the same frame: the player finally gets to look, and looking
+answers nothing. **Never open the fog anywhere else, for any reason.** It works once.
 
 ### Where the player is on the ladder
 

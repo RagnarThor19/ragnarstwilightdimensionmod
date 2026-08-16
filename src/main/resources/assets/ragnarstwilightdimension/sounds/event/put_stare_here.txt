@@ -1,0 +1,4 @@
+Drop stare.ogg in this folder.
+
+Mono, not stereo - a stereo file plays flat, with no direction and no falloff.
+Wired up as ragnarstwilightdimension:event.stare in sounds.json, carrying 75 blocks.

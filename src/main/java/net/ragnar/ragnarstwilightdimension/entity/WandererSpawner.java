@@ -8,6 +8,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
+import net.ragnar.ragnarstwilightdimension.event.TwilightSchedule;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 /**
@@ -60,7 +61,8 @@ public final class WandererSpawner {
 		}
 
 		int now = world.getServer().getTicks();
-		if (now % CHECK_INTERVAL_TICKS != 0 || now < nextAllowedTick) {
+		if (!TwilightSchedule.rolls(now, CHECK_INTERVAL_TICKS, TwilightSchedule.WANDERER)
+				|| now < nextAllowedTick) {
 			return;
 		}
 

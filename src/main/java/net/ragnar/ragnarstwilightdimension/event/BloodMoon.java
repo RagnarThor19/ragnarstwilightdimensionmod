@@ -194,7 +194,8 @@ public final class BloodMoon {
 			return;
 		}
 
-		if (now % CHECK_INTERVAL_TICKS != 0 || now < nextAllowedTick || world.getPlayers().isEmpty()) {
+		if (!TwilightSchedule.rolls(now, CHECK_INTERVAL_TICKS, TwilightSchedule.BLOOD_MOON)
+				|| now < nextAllowedTick || world.getPlayers().isEmpty()) {
 			return;
 		}
 

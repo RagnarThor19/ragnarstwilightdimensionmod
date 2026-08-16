@@ -67,11 +67,51 @@ public final class ModEntities {
 					.disableSummon()
 					.build("giant_steve"));
 
+	/**
+	 * The blank one. No spawn egg and no {@code /summon} like the rest of the set pieces - use
+	 * {@code /stare}, which puts one where the event would have put it.
+	 *
+	 * <p>The tracking range is the part that matters. It is given in chunks, and the stare places this
+	 * up to forty blocks out and thirty up; at the default 8 chunks that is fine, but it is set
+	 * explicitly here so that moving the event further out later does not silently stop the client
+	 * being told the thing exists.
+	 */
+	public static final EntityType<PaleFigureEntity> PALE_FIGURE = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "pale_figure"),
+			EntityType.Builder.create(PaleFigureEntity::new, SpawnGroup.MISC)
+					.dimensions(0.6F, 1.8F)
+					.maxTrackingRange(8)
+					.makeFireImmune()
+					.disableSummon()
+					.build("pale_figure"));
+
+	/**
+	 * The one that watches the sky. No spawn egg and no {@code /summon} - it is placed by
+	 * {@link WitnessSpawner} and by {@code /witness}, both of which give it the bearing it points
+	 * along, and one placed without that would be a boss standing to attention at zero degrees.
+	 *
+	 * <p>Tracking range is in chunks and is set well past the fight's own reach, because unlike the
+	 * other set pieces this one has a boss bar, a fog and a soundtrack attached to it: a client that
+	 * has stopped being told the entity exists would keep all three.
+	 */
+	public static final EntityType<WitnessEntity> WITNESS = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "witness"),
+			EntityType.Builder.create(WitnessEntity::new, SpawnGroup.MISC)
+					.dimensions(WitnessEntity.WIDTH, WitnessEntity.HEIGHT)
+					.maxTrackingRange(10)
+					.makeFireImmune()
+					.disableSummon()
+					.build("witness"));
+
 	private ModEntities() {
 	}
 
 	public static void initialize() {
 		FabricDefaultAttributeRegistry.register(SILHOUETTE, SilhouetteEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(PALE_FIGURE, PaleFigureEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(WITNESS, WitnessEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(WANDERER, WandererEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(BLOOD_STEVE, BloodSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(GIANT_STEVE, GiantSteveEntity.createAttributes());

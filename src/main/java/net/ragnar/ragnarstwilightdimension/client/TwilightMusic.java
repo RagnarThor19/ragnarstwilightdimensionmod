@@ -27,6 +27,23 @@ public final class TwilightMusic {
 			new MusicSound(ModSounds.MUSIC_TWILIGHT, MIN_GAP_TICKS, MAX_GAP_TICKS, true);
 
 	/**
+	 * The same playlist, handed over in a form that will not interrupt anything.
+	 *
+	 * <p>Asking for a different track is normally the same thing as cutting the current one:
+	 * {@code MusicTracker#tick} stops whatever is playing the moment the client wants something else -
+	 * but only if the something else says it may, which is the last argument here. This is
+	 * {@link #TWILIGHT} with that permission withheld.
+	 *
+	 * <p>It exists for one moment in the whole mod. When the witness dies its track is left to finish
+	 * rather than cut, and the only way to leave a track alone in vanilla's tracker is to hand back
+	 * something that is not allowed to replace it. When the file does run out, the ordinary gap above
+	 * takes over on its own and the dimension comes back a minute or three later, which is the right
+	 * silence to be standing in and is not worth setting by hand.
+	 */
+	public static final MusicSound TWILIGHT_RINGING_OUT =
+			new MusicSound(ModSounds.MUSIC_TWILIGHT, MIN_GAP_TICKS, MAX_GAP_TICKS, false);
+
+	/**
 	 * Both longer than the event itself, which is the point: the track runs exactly once and can
 	 * never start a second time part-way through. The event is over before either of these could
 	 * elapse, and its end cuts the tracker anyway.
@@ -37,6 +54,17 @@ public final class TwilightMusic {
 	/** Plays instead of {@link #TWILIGHT} for as long as the event is up. */
 	public static final MusicSound BLOODMOON =
 			new MusicSound(ModSounds.MUSIC_BLOODMOON, BLOODMOON_MIN_GAP_TICKS, BLOODMOON_MAX_GAP_TICKS, true);
+
+	/**
+	 * The witness's track, from the moment the fare is paid until the thing is dead or has forgotten
+	 * you.
+	 *
+	 * <p>The gap is short on purpose, unlike the blood moon's. That event is exactly as long as its
+	 * track and can only happen once; this one runs until somebody wins, which might be two minutes or
+	 * might be ten, so the track has to be allowed to come round again rather than leave the back half
+	 * of a long fight in silence.
+	 */
+	public static final MusicSound WITNESS = new MusicSound(ModSounds.MUSIC_WITNESS, 40, 80, true);
 
 	private static boolean wasInTwilight;
 

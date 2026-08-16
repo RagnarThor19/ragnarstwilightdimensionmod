@@ -24,6 +24,15 @@ public final class ModSounds {
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_BLOODMOON = register("music.bloodmoon");
 
 	/**
+	 * The witness's track, for the five seconds it looks at you and every second of the fight after.
+	 *
+	 * <p>Music, so it plays flat and at the same volume wherever the listener is standing - which is
+	 * why this one wants to be a <b>stereo</b> file, unlike the positional sounds in this class.
+	 * {@code sounds/music/witness.ogg}.
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_WITNESS = register("music.witness");
+
+	/**
 	 * Custom atmosphere beds, one picked at random. The files are optional - drop them into
 	 * {@code sounds/ambience/} and flip {@code INCLUDE_CUSTOM_AMBIENCE} in {@code TwilightAmbience}.
 	 */
@@ -65,6 +74,35 @@ public final class ModSounds {
 			registerRanged("ambience.leviathan_2", LEVIATHAN_RANGE);
 	public static final RegistryEntry.Reference<SoundEvent> AMBIENCE_LEVIATHAN_3 =
 			registerRanged("ambience.leviathan_3", LEVIATHAN_RANGE);
+
+	/**
+	 * How far the stare carries, in blocks. Same two-places-to-keep-in-sync arrangement as
+	 * {@link #LEVIATHAN_RANGE} above - here and {@code attenuation_distance} in {@code sounds.json}.
+	 *
+	 * <p>This number is only the <i>reach</i>: it is what makes the server forward the sound to
+	 * everyone within seventy-five blocks instead of the default sixteen. How loud it is when it gets
+	 * there is decided in two other places, and both of them matter more:
+	 *
+	 * <ul>
+	 *   <li>{@code Stare} plays the positional copy at volume 3.0, which stretches the client's fade
+	 *       to 225 blocks so the sound is still near full strength right out to the edge of earshot.
+	 *   <li>The player being looked at does not get the positional copy at all. They get it at their
+	 *       own ears, at gain 1.0, because a source is clamped at 1.0 however loud the world says it
+	 *       is and no amount of tuning here would make a forty-block one hit hard enough.
+	 * </ul>
+	 *
+	 * <p>Past that, loudness is the file's job. A quiet .ogg cannot be rescued from Java: normalise it
+	 * so it peaks near 0 dBFS, because gain 1.0 on a quiet recording is still a quiet recording.
+	 */
+	public static final float STARE_RANGE = 75.0F;
+
+	/**
+	 * The noise the blank figure makes while it is looking at you. One file:
+	 * {@code sounds/event/stare.ogg}, and it must be <b>mono</b> - the game plays a stereo file
+	 * flat, with no direction and no falloff, and this one has to be coming from a specific point in
+	 * the sky.
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> STARE = registerRanged("event.stare", STARE_RANGE);
 
 	private ModSounds() {
 	}

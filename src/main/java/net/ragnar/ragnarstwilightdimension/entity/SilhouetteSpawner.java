@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
+import net.ragnar.ragnarstwilightdimension.event.TwilightSchedule;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 /**
@@ -41,7 +42,11 @@ public final class SilhouetteSpawner {
 		if (!ModDimensions.TWILIGHT_WORLD.equals(world.getRegistryKey())) {
 			return;
 		}
-		if (world.getTime() % CHECK_INTERVAL_TICKS != 0) {
+		// Off the server's clock rather than the world's, and 33 ticks into the interval rather than at
+		// the top of it, so this roll does not land on the same tick as everything else - see
+		// TwilightSchedule.
+		int now = world.getServer().getTicks();
+		if (!TwilightSchedule.rolls(now, CHECK_INTERVAL_TICKS, TwilightSchedule.SILHOUETTE)) {
 			return;
 		}
 

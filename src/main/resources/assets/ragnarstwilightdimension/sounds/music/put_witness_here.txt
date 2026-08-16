@@ -1,0 +1,5 @@
+Drop witness.ogg in this folder, alongside the other tracks.
+
+Stereo is right for this one - it is music, so it plays flat and non-positionally.
+(The opposite of sounds/event/stare.ogg, which has to be mono because it comes from a point.)
+Wired up as ragnarstwilightdimension:music.witness in sounds.json.

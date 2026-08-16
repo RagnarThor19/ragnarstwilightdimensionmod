@@ -52,6 +52,15 @@
 			}
 		]
 	},
+	"music.witness": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/witness",
+				"stream": true
+			}
+		]
+	},
 	"ambience.twilight": {
 		"category": "ambient",
 		"sounds": [
@@ -143,6 +152,16 @@
 				"name": "ragnarstwilightdimension:ambience/large_sound3",
 				"stream": true,
 				"attenuation_distance": 512
+			}
+		]
+	},
+	"event.stare": {
+		"category": "hostile",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:event/stare",
+				"stream": true,
+				"attenuation_distance": 75
 			}
 		]
 	}
