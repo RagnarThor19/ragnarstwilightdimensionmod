@@ -1,0 +1,15 @@
+{
+	"structures": [
+		{
+			"structure": "ragnarstwilightdimension:twilight_church",
+			"weight": 1
+		}
+	],
+	"placement": {
+		"type": "minecraft:random_spread",
+		"spread_type": "linear",
+		"spacing": 48,
+		"separation": 17,
+		"salt": 913447102
+	}
+}

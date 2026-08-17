@@ -104,6 +104,26 @@ public final class ModSounds {
 	 */
 	public static final RegistryEntry.Reference<SoundEvent> STARE = registerRanged("event.stare", STARE_RANGE);
 
+	/**
+	 * How far the church bell carries, in blocks. Same two-places-to-keep-in-sync arrangement as
+	 * {@link #LEVIATHAN_RANGE} and {@link #STARE_RANGE} - here, and {@code attenuation_distance} in
+	 * {@code sounds.json}.
+	 *
+	 * <p>Two hundred and fifty is a long way past the fog, which is the point: the bell is the only
+	 * thing in the dimension that tells you a building exists before you can see it. Gain works out to
+	 * {@code 1 - distance / 250}, so it is at half strength at a hundred and twenty-five blocks and
+	 * still just there at two hundred.
+	 */
+	public static final float BELL_RANGE = 250.0F;
+
+	/**
+	 * The church bell, rung once a day by {@code ChurchBell}. One file:
+	 * {@code sounds/ambience/twilight_bell.ogg}, and it must be <b>mono</b> - a stereo file is played
+	 * flat, with no direction and no falloff, and the entire job of this one is to come from a
+	 * particular tower a long way off.
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> BELL = registerRanged("ambience.bell", BELL_RANGE);
+
 	private ModSounds() {
 	}
 

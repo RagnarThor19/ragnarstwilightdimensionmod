@@ -87,6 +87,26 @@ public final class ModEntities {
 					.build("pale_figure"));
 
 	/**
+	 * The one in the pew. Left summonable, like the blood steve and unlike the other set pieces,
+	 * because he is the only thing in the mod whose whole point is a pose: a summoned one sits down
+	 * and stares wherever it was facing, which is the entire behaviour, and finding a church every
+	 * time you want to look at him would be a waste of an afternoon.
+	 *
+	 * <p>Placed for real by the church itself - he is baked into the structure template rather than
+	 * spawned by anything here. See {@link ChurchSteveEntity}.
+	 *
+	 * <p>The dimensions are the seated ones and are measured from the seat, not the floor, which is
+	 * why the height is well under a player's.
+	 */
+	public static final EntityType<ChurchSteveEntity> CHURCH_STEVE = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "church_steve"),
+			EntityType.Builder.create(ChurchSteveEntity::new, SpawnGroup.MISC)
+					.dimensions(ChurchSteveEntity.WIDTH, ChurchSteveEntity.HEIGHT)
+					.maxTrackingRange(8)
+					.build("church_steve"));
+
+	/**
 	 * The one that watches the sky. No spawn egg and no {@code /summon} - it is placed by
 	 * {@link WitnessSpawner} and by {@code /witness}, both of which give it the bearing it points
 	 * along, and one placed without that would be a boss standing to attention at zero degrees.
@@ -115,5 +135,6 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(WANDERER, WandererEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(BLOOD_STEVE, BloodSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(GIANT_STEVE, GiantSteveEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(CHURCH_STEVE, ChurchSteveEntity.createAttributes());
 	}
 }

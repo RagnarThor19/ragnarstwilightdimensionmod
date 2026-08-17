@@ -9,12 +9,10 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.ragnar.ragnarstwilightdimension.mixin.client.MusicTrackerAccessor;
 import net.ragnar.ragnarstwilightdimension.mixin.client.SoundManagerAccessor;
 import net.ragnar.ragnarstwilightdimension.mixin.client.SoundSystemAccessor;
 import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
-import net.ragnar.ragnarstwilightdimension.network.WitnessPullPayload;
 
 /**
  * The client half of the witness fight: the track it puts on, and how much of the world it takes
@@ -41,20 +39,7 @@ public final class WitnessClient {
 	/** Ticks left of the fade, or 0 when nothing is fading. See {@link #tickFade}. */
 	private static int fadeTicks;
 
-	private static Vec3d pull = Vec3d.ZERO;
-	private static int pullTicks;
-
 	private WitnessClient() {
-	}
-
-	/** Whether the player is being walked towards something. Read by the movement mixin. */
-	public static boolean isPulling() {
-		return pullTicks > 0;
-	}
-
-	/** Where they are being walked to. */
-	public static Vec3d pullTarget() {
-		return pull;
 	}
 
 	/** Whether the witness's track has taken over. Read by the music mixin. */
@@ -80,12 +65,6 @@ public final class WitnessClient {
 	public static void register() {
 		ClientPlayNetworking.registerGlobalReceiver(WitnessPayload.ID, (payload, context) ->
 				context.client().execute(() -> accept(payload)));
-
-		ClientPlayNetworking.registerGlobalReceiver(WitnessPullPayload.ID, (payload, context) ->
-				context.client().execute(() -> {
-					pull = new Vec3d(payload.x(), payload.y(), payload.z());
-					pullTicks = payload.ticks();
-				}));
 
 		ClientTickEvents.END_CLIENT_TICK.register(WitnessClient::onClientTick);
 	}
@@ -123,10 +102,6 @@ public final class WitnessClient {
 	private static void onClientTick(MinecraftClient client) {
 		if (fadeTicks > 0) {
 			tickFade(client);
-		}
-
-		if (pullTicks > 0) {
-			pullTicks--;
 		}
 
 		if (holdTicks <= 0) {
@@ -209,9 +184,5 @@ public final class WitnessClient {
 		// Whether the track is faded is decided by the packet that ends the fight, not here. This is the
 		// state going back to nothing, and nothing is the ordinary cut.
 		fadeTicks = 0;
-
-		// The legs go back with everything else. A fight that ended by the chunk unloading must not
-		// leave somebody walking north for the rest of the session.
-		pullTicks = 0;
 	}
 }

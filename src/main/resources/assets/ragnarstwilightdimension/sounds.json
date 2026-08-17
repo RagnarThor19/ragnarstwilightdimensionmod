@@ -164,5 +164,15 @@
 				"attenuation_distance": 75
 			}
 		]
+	},
+	"ambience.bell": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:ambience/twilight_bell",
+				"stream": true,
+				"attenuation_distance": 250
+			}
+		]
 	}
 }

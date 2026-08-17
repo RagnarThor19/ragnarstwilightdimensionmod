@@ -22,6 +22,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -36,11 +37,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.server.world.ServerWorld;
 import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
-import net.ragnar.ragnarstwilightdimension.network.WitnessPullPayload;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,6 +66,12 @@ import java.util.UUID;
  * blocks to ten, to eight, to six, to five, so by the end you are fighting something you can only see
  * when it is already on you.
  *
+ * <p><b>And each time it points, the sky answers.</b> Rings are drawn on the ground where the player
+ * is about to be, one after another, and a second and a half later something comes down through the
+ * fog into the middle of each of them - see {@link SkyStrike}. The four seconds it spends unable to be
+ * hurt are the four seconds the player spends unable to stand still, and the last of them lands on its
+ * own feet as the arm comes down and throws everybody back out into the fog.
+ *
  * <p>It also learns. From the halfway point its own blows are as hard as the hardest one it has been
  * hit with, so the better the gear brought to it, the worse the thing swinging back.
  *
@@ -83,6 +92,13 @@ public class WitnessEntity extends PathAwareEntity {
 	public static final float MODEL_SCALE = HEIGHT / 1.8F;
 
 	public static final float WIDTH = 0.6F * MODEL_SCALE;
+
+	/**
+	 * How far to one side the arms hang, in blocks. The player model's arms are five pixels off centre,
+	 * which is 0.3125 of a block before the renderer's scale and a little under half a one after it.
+	 * Only used to find the raised hand - see {@link #drawChannel}.
+	 */
+	private static final double ARM_OFFSET = 0.3125 * MODEL_SCALE;
 
 	// --- the fare -------------------------------------------------------------
 	/**
@@ -111,20 +127,66 @@ public class WitnessEntity extends PathAwareEntity {
 	 * How long each of the three punctuations lasts, and it cannot be hurt for any of it.
 	 *
 	 * <p>Four seconds is a long time to be unable to do anything to something, which is why the point
-	 * is not a pause: for all four the player's legs belong to it - see {@link #beginPoint} - and they
-	 * spend the whole time being walked into range of what happens at the end.
+	 * is not a pause: the whole of it is spent under the marks it is laying down - see
+	 * {@link #beginPoint} - and a player who treats it as a breather is hit by every one of them.
 	 */
 	private static final int POINT_TICKS = 80;
 
-	/** The legs are released just before the point ends, so the release cannot fight the blow. */
-	private static final int PULL_TICKS = POINT_TICKS - 4;
-
 	/**
 	 * How far you can see while it is pointing, unless the fight is already worse than this - see
-	 * {@link #fightFog}. Four blocks, for the whole time the player is being walked somewhere they
-	 * cannot see.
+	 * {@link #fightFog}.
+	 *
+	 * <p>Tighter than any quarter but the last, and deliberately not as tight as it could be. The point
+	 * is now a thing to be read and run out of, so it has to be legible: at four blocks a mark laid
+	 * ahead of a moving player is under their feet before its far side exists, and what should be a
+	 * dodge becomes a coin toss. Five and a half puts the near rim of every mark inside the fog at the
+	 * moment it is drawn, and nothing else.
 	 */
-	private static final float POINT_FOG = 4.0F;
+	private static final float POINT_FOG = 5.5F;
+
+	/**
+	 * How many come down at each punctuation, by the quarter it is entering. The first is a warning that
+	 * can be walked out of; the last is a field of them in four blocks of fog.
+	 */
+	private static final int[] STRIKES = {0, 3, 4, 5};
+
+	/** When the first mark is laid, and the last of the tracking ones, in ticks into the point. */
+	private static final int FIRST_STRIKE = 10;
+	private static final int LAST_STRIKE = POINT_TICKS - SkyStrike.FUSE - 8;
+
+	/**
+	 * When the one on its own feet is laid, relative to the arm coming down.
+	 *
+	 * <p>Positive, so it lands a few ticks <i>after</i> the point is over rather than inside it. The
+	 * punctuation ends on the biggest thing in it and not on the fight quietly resuming, and by the time
+	 * it goes off the witness is already moving again - so the last of the four seconds is a player
+	 * being thrown away from something that has started walking towards them.
+	 */
+	private static final int FINAL_OVERHANG = 4;
+
+	/**
+	 * How much of a player's own travel a mark is thrown out along, and how far that is allowed to go.
+	 *
+	 * <p>Under one on purpose. Leading a runner perfectly is unbeatable by running, which makes the only
+	 * answer standing still - the opposite of what the four seconds are for. At two thirds, holding one
+	 * direction walks into it and any change of mind at all beats it.
+	 *
+	 * <p>The two numbers have to be read against a walk of about a fifth of a block a tick and a sprint
+	 * of a little over a quarter. Two thirds of thirty ticks puts a mark four and a quarter blocks ahead
+	 * of a walker who will cover six and a half before it lands, and five and a half ahead of a sprinter
+	 * who will cover eight and a half - so both of them end up inside a three block circle, and neither
+	 * of them does if they turn. The cap is well clear of both and is there for the player who has found
+	 * something faster than running, where a mark that kept leading would simply always be in front of
+	 * them and the fight would stop having an answer.
+	 */
+	private static final double LEAD_SHARE = 0.65;
+	private static final double LEAD_MAX = 5.5;
+
+	/** How much of each tick's movement goes into the running estimate of it. See {@link #trackDrift}. */
+	private static final double DRIFT_SMOOTHING = 0.35;
+
+	/** How far a mark is thrown off the line, so two laid on the same runner are not the same circle. */
+	private static final double STRIKE_SCATTER = 1.25;
 
 	/** Ticks between shoves, per quarter. It gets less patient. */
 	private static final int[] SHOVE_INTERVAL = {160, 140, 110, 80};
@@ -259,6 +321,19 @@ public class WitnessEntity extends PathAwareEntity {
 	private double surfaceY = Double.NaN;
 	private final Set<UUID> affected = new HashSet<>();
 	private final List<SilhouetteEntity> watchers = new ArrayList<>();
+
+	// --- what is in the air ----------------------------------------------------
+	/** The marks currently burning down. Ticked by {@link #tickStrikes}, and never saved. */
+	private final List<SkyStrike> strikes = new ArrayList<>();
+
+	/** Where everybody in the fight was last tick, and how fast they have been going. See {@link #trackDrift}. */
+	private final Map<UUID, Vec3d> wasAt = new HashMap<>();
+	private final Map<UUID, Vec3d> drift = new HashMap<>();
+
+	private int strikesLeft;
+	private int strikeGap;
+	private int nextStrike;
+	private boolean lastStrikeLaid;
 
 	public WitnessEntity(EntityType<? extends WitnessEntity> type, World world) {
 		super(type, world);
@@ -403,22 +478,28 @@ public class WitnessEntity extends PathAwareEntity {
 	 * The punctuation, and the worst four seconds in the fight.
 	 *
 	 * <p>It stops fighting, squares up to the player, puts the arm back up at the sky and cannot be
-	 * touched. What the player gets in exchange is that <b>their legs stop being theirs</b>: for the
-	 * whole four seconds they walk towards it whatever they press, while the fog drops to four blocks
-	 * so they cannot see what they are walking into. They can still look wherever they like, which is
-	 * the part that makes it land - nothing is hidden from them, they simply cannot decline.
+	 * touched. Then the thing it is pointing at starts arriving: a mark on the ground every few ticks,
+	 * each of them laid not where the player is but where they are <b>about to be</b>, and each of them
+	 * landing a second and a half later - see {@link SkyStrike} and {@link #layStrikeAhead}.
 	 *
-	 * <p>At the end of it, it hits whatever is now standing in front of it, and shoves the rest away.
-	 * The blow is not dodgeable and is not meant to be: it is the price of the two seconds of free
-	 * damage the player got before the point started, and the reason the punctuation is a threat
-	 * rather than a rest.
+	 * <p>The exchange is the entire design of the fight. The player gets four seconds where nothing they
+	 * swing means anything, and in return they are the only one of the two who is allowed to move -
+	 * which is worth exactly as much as they can do with it. Standing and waiting for the arm to come
+	 * down is punished by everything in the air; running in one direction is punished by the marks being
+	 * thrown out ahead; changing their mind is not punished at all. It cannot be hurt, so it is not a
+	 * damage race, and it cannot be waited out, so it is not a rest.
 	 *
-	 * <p>This is the whole rhythm of the fight. Without it the thing is a slab of health; with it
-	 * there are three moments where the player is walked into something while watching it happen.
+	 * <p>The last of them is laid on its own feet as the arm comes down, which is both the end of the
+	 * punctuation and the shove that starts the next quarter - see {@link #endPoint}.
 	 */
 	private void beginPoint() {
 		this.pointTicks = POINT_TICKS;
-		setArmPose(this.quarter >= 3 ? ArmPose.PLAYER : ArmPose.SKY);
+
+		// The arm goes up and stays up for all four seconds, even in the last quarter where it otherwise
+		// spends the fight pointed at the player. Everything about to come down comes out of the sky it
+		// is pointing at, so for as long as any of it is in the air the gesture has to still be at the
+		// sky. It gets the player back in endPoint, once there is nothing left up there.
+		setArmPose(ArmPose.SKY);
 
 		// Planted properly rather than merely told to stop. With the AI still running, the attack goal
 		// keeps re-pathing underneath and the thing shuffles on the spot while it is meant to be a
@@ -430,7 +511,19 @@ public class WitnessEntity extends PathAwareEntity {
 		this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(),
 				SoundEvents.ENTITY_WARDEN_HEARTBEAT, SoundCategory.HOSTILE, 3.0F, 0.55F);
 
-		pullEveryone(PULL_TICKS);
+		this.strikesLeft = STRIKES[this.quarter];
+		this.nextStrike = FIRST_STRIKE;
+		this.lastStrikeLaid = false;
+
+		// Spread evenly between the first and the last, so the quarter with five of them is not five in
+		// the same second - it is a steady beat that happens to be twice as fast as the one before it.
+		this.strikeGap = this.strikesLeft > 1 ? (LAST_STRIKE - FIRST_STRIKE) / (this.strikesLeft - 1) : 0;
+
+		// Nobody's travel carries over from the last punctuation. Half a minute of fighting ago is not
+		// evidence of which way anybody is going now.
+		this.wasAt.clear();
+		this.drift.clear();
+
 		callWatchers();
 	}
 
@@ -494,34 +587,207 @@ public class WitnessEntity extends PathAwareEntity {
 		// there is only one other thing here to point at.
 		setArmPose(this.quarter >= 3 ? ArmPose.PLAYER : ArmPose.LOWERED);
 		setAiDisabled(false);
-		pullEveryone(0);
 
 		PlayerEntity player = challenger();
 		if (player != null && player.isAlive()) {
 			setTarget(player);
 		}
 
-		// No special blow at the end of it, and deliberately no shove either. The four seconds of
-		// walking have put the player inside its reach, so the thing that happens next is simply its
-		// ordinary attack landing - which is what the pull was for. Shoving here would throw them back
-		// out before it could swing and undo the whole point.
+		// No blow swung here and no shove called, because both are already in the air: the last mark was
+		// laid on its own feet half a second ago and comes down a few ticks from now, wider and harder
+		// than the rest of them. Anything thrown in on top of that would land underneath it and be read
+		// as part of it, and the punctuation would end on a mess instead of on one thing.
 		this.shoveTicks = SHOVE_INTERVAL[this.quarter];
 		applyQuarter();
+
+		// Nothing is being watched for any more. The marks still in the air were aimed when they were
+		// laid and do not re-aim, so this is the whole of it.
+		this.wasAt.clear();
+		this.drift.clear();
 	}
 
-	/** Hands everyone near the fight over to the pull, or hands their legs back when ticks is 0. */
-	private void pullEveryone(int ticks) {
-		WitnessPullPayload payload = ticks <= 0
-				? WitnessPullPayload.release()
-				: new WitnessPullPayload(this.getX(), this.getY(), this.getZ(), ticks);
+	// --- what comes down ------------------------------------------------------
 
-		for (UUID id : this.affected) {
-			ServerPlayerEntity player = playerById(id);
+	/**
+	 * One tick of the punctuation: what is being aimed at, what is being laid down, and what has landed.
+	 *
+	 * <p>Called from {@link #tickFighting} outside the {@code pointTicks > 0} branch on purpose. The
+	 * last mark is timed to come down a moment <i>after</i> the arm does - see {@link #FINAL_OVERHANG} -
+	 * so anything that only ran while the point was running would drop it on the floor unexploded.
+	 */
+	private void tickStrikes() {
+		if (this.pointTicks > 0) {
+			trackDrift();
+			layDueStrikes();
+			drawChannel();
+		}
 
-			if (player != null) {
-				ServerPlayNetworking.send(player, payload);
+		for (Iterator<SkyStrike> burning = this.strikes.iterator(); burning.hasNext(); ) {
+			if (burning.next().tick(this)) {
+				burning.remove();
 			}
 		}
+	}
+
+	/**
+	 * How fast everybody in the fight is actually moving, worked out by watching them.
+	 *
+	 * <p>A player's velocity cannot simply be read on the server. Their movement arrives as positions
+	 * rather than as inputs, so {@code getVelocity} on somebody sprinting flat out is whatever gravity
+	 * last did to them and nothing else - the number is real, it is just not the number anyone means by
+	 * it. So this differences their position tick over tick instead.
+	 *
+	 * <p>Smoothed, because one tick of walking is a fifth of a block and the noise on a single sample is
+	 * most of the sample. Marks are laid four blocks out along this and an unsmoothed estimate would
+	 * scatter them by a body width either side of where the player is actually headed, which reads as
+	 * the thing missing on purpose.
+	 */
+	private void trackDrift() {
+		for (PlayerEntity player : this.getWorld().getEntitiesByClass(PlayerEntity.class,
+				this.getBoundingBox().expand(ENGAGE_RANGE),
+				player -> !player.isSpectator() && player.isAlive())) {
+			UUID id = player.getUuid();
+			Vec3d now = player.getPos();
+			Vec3d before = this.wasAt.put(id, now);
+
+			if (before == null) {
+				// First sight of them this punctuation. One position is not a direction.
+				continue;
+			}
+
+			Vec3d step = new Vec3d(now.x - before.x, 0.0, now.z - before.z);
+			Vec3d smoothed = this.drift.getOrDefault(id, Vec3d.ZERO);
+
+			this.drift.put(id, smoothed.multiply(1.0 - DRIFT_SMOOTHING).add(step.multiply(DRIFT_SMOOTHING)));
+		}
+	}
+
+	private void layDueStrikes() {
+		int elapsed = POINT_TICKS - this.pointTicks;
+
+		if (this.strikesLeft > 0 && elapsed >= this.nextStrike) {
+			this.strikesLeft--;
+			this.nextStrike += this.strikeGap;
+			layStrikeAhead();
+		}
+
+		if (!this.lastStrikeLaid && elapsed >= POINT_TICKS - SkyStrike.FUSE + FINAL_OVERHANG) {
+			this.lastStrikeLaid = true;
+			layFinalStrike();
+		}
+	}
+
+	/**
+	 * Puts one where somebody is about to be.
+	 *
+	 * <p>Not where they are. A ring dropped on a player's feet with a second and a half on it is beaten
+	 * by holding one key, which is not a dodge - so it is thrown out along the way they are already
+	 * going, far enough that a straight line walks into it. Stopping beats it, turning beats it, and
+	 * carrying on does not. That is the whole of the four seconds: it has stopped fighting, and the
+	 * price of that is that the player is not allowed to.
+	 *
+	 * <p>Who it picks is a roll among everybody still in the fight rather than always the challenger.
+	 * With one player that is no roll at all; with three it means none of them get to be the one who is
+	 * safe because somebody else is being aimed at.
+	 */
+	private void layStrikeAhead() {
+		if (!(this.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+
+		List<PlayerEntity> here = world.getEntitiesByClass(PlayerEntity.class,
+				this.getBoundingBox().expand(ENGAGE_RANGE),
+				player -> !player.isSpectator() && player.isAlive());
+
+		if (here.isEmpty()) {
+			// Nobody left to aim at. It goes on pointing regardless - the sky is not conditional on an
+			// audience - but there is nothing to lay a ring on.
+			return;
+		}
+
+		PlayerEntity target = here.get(this.random.nextInt(here.size()));
+
+		Vec3d lead = this.drift.getOrDefault(target.getUuid(), Vec3d.ZERO)
+				.multiply(SkyStrike.FUSE * LEAD_SHARE);
+
+		// Capped, so a player who has found a way to move very fast is not simply out of the fight - the
+		// mark stops chasing them past a point and starts landing behind them, which is a different and
+		// entirely fair problem.
+		if (lead.lengthSquared() > LEAD_MAX * LEAD_MAX) {
+			lead = lead.normalize().multiply(LEAD_MAX);
+		}
+
+		double scatterX = (this.random.nextDouble() * 2.0 - 1.0) * STRIKE_SCATTER;
+		double scatterZ = (this.random.nextDouble() * 2.0 - 1.0) * STRIKE_SCATTER;
+
+		Vec3d at = new Vec3d(
+				target.getX() + lead.x + scatterX,
+				target.getY(),
+				target.getZ() + lead.z + scatterZ);
+
+		this.strikes.add(SkyStrike.mark(world, at, SkyStrike.RADIUS, SkyStrike.DAMAGE, SkyStrike.KNOCKBACK, false));
+	}
+
+	/**
+	 * The one on its own feet.
+	 *
+	 * <p>The only mark in the fight whose position is not a surprise: it is centred on the single thing
+	 * in the fog the player is guaranteed to be able to see, which makes it the one they are expected to
+	 * read and clear. It is also the reason the four seconds do not end with the player standing next to
+	 * something that is about to start swinging - it throws them out with {@link #SHOVE_STRENGTH}, which
+	 * is the fight's own way of saying they have lost track of it again.
+	 */
+	private void layFinalStrike() {
+		if (!(this.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+
+		this.strikes.add(SkyStrike.mark(world, this.getPos(),
+				SkyStrike.FINAL_RADIUS, SkyStrike.FINAL_DAMAGE, SHOVE_STRENGTH, true));
+	}
+
+	/**
+	 * The thread between the arm and the sky.
+	 *
+	 * <p>Nothing but a few particles at the raised hand, and the only thing in the punctuation that says
+	 * <i>this</i> is where all of it is coming from. Without it the rings on the ground are a hazard the
+	 * arena produces and the witness happens to be standing in; with it they are something the thing
+	 * with its finger up is doing.
+	 *
+	 * <p>The hand is worked out rather than read off the model. Its right arm sits a little under half a
+	 * block to that side once the renderer's scale is applied, and the raised fist reaches about a third
+	 * of a block above the top of the hitbox - the same measurement the sink is cut against.
+	 */
+	private void drawChannel() {
+		if (!(this.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+
+		// Its right, in world terms. The forward vector is (-sin yaw, cos yaw) and the left is
+		// (cos yaw, sin yaw), so the right is the negative of that.
+		float yaw = this.getBodyYaw() * MathHelper.RADIANS_PER_DEGREE;
+		double x = this.getX() - MathHelper.cos(yaw) * ARM_OFFSET;
+		double z = this.getZ() - MathHelper.sin(yaw) * ARM_OFFSET;
+		double y = this.getY() + HEIGHT + 0.35;
+
+		world.spawnParticles(ParticleTypes.END_ROD, x, y, z, 1, 0.05, 0.05, 0.05, 0.01);
+		world.spawnParticles(ParticleTypes.WHITE_ASH, x, y, z, 2, 0.1, 0.2, 0.1, 0.02);
+	}
+
+	/**
+	 * Takes back everything that was in the air.
+	 *
+	 * <p>Called on every path out of a punctuation that is not the punctuation ending - it dies, it is
+	 * walked away from, the chunk goes - because a ring that has been drawn and not landed is a promise,
+	 * and one left burning after the fight is over would go off in an empty field with nothing to
+	 * explain it.
+	 */
+	private void clearStrikes() {
+		this.strikes.clear();
+		this.strikesLeft = 0;
+		this.lastStrikeLaid = true;
+		this.wasAt.clear();
+		this.drift.clear();
 	}
 
 	/**
@@ -605,10 +871,13 @@ public class WitnessEntity extends PathAwareEntity {
 			endPoint();
 		}
 
+		// After the branch, not inside it. The last mark outlives the point by a few ticks.
+		tickStrikes();
+
 		if (this.pointTicks > 0) {
 			// Planted. It does not move, does not swing and cannot be hurt - but it is squared up to
 			// the player the whole time, with its face turned up past them. Being pointedly not looked
-			// at by the thing dragging you towards it is the shape of the four seconds.
+			// at by the thing calling all of this down on you is the shape of the four seconds.
 			this.getNavigation().stop();
 			this.setVelocity(Vec3d.ZERO);
 			facePlayerLookingUp();
@@ -766,6 +1035,7 @@ public class WitnessEntity extends PathAwareEntity {
 		this.quarter = 0;
 		this.hardestHit = 0.0F;
 		applyQuarter();
+		clearStrikes();
 		dismissWatchers();
 
 		this.bar.setVisible(false);
@@ -855,7 +1125,7 @@ public class WitnessEntity extends PathAwareEntity {
 		this.playSound(getHurtSound(source), this.getSoundVolume(), this.getSoundPitch());
 
 		this.pointTicks = 0;
-		pullEveryone(0);
+		clearStrikes();
 		dismissWatchers();
 		setState(State.DYING);
 		setArmPose(ArmPose.SKY);
@@ -972,9 +1242,6 @@ public class WitnessEntity extends PathAwareEntity {
 				ServerPlayerEntity player = playerById(id);
 				if (player != null) {
 					ServerPlayNetworking.send(player, ending);
-
-					// Whatever ended this, nobody is left walking towards a fight that is over.
-					ServerPlayNetworking.send(player, WitnessPullPayload.release());
 				}
 			}
 			this.affected.clear();
@@ -1028,8 +1295,8 @@ public class WitnessEntity extends PathAwareEntity {
 	/**
 	 * How much of the world the fight is currently allowing: nothing at all before it starts, the
 	 * quarter's own fog while it is swinging, and {@link #POINT_FOG} for the four seconds it is
-	 * pointing - the room is at its smallest exactly while the player has no say in where they are
-	 * walking.
+	 * pointing - the room is at its smallest exactly while there is the most in it to be got out of the
+	 * way of.
 	 *
 	 * <p>Dying counts as fighting here. The room it closed stays closed until the body is gone, so
 	 * nothing about the last three seconds hands any of it back - the fog going out at the end is the
@@ -1065,6 +1332,7 @@ public class WitnessEntity extends PathAwareEntity {
 			this.bar.setVisible(false);
 			this.bar.clearPlayers();
 			syncEffects(false);
+			clearStrikes();
 			dismissWatchers();
 		}
 		super.remove(reason);

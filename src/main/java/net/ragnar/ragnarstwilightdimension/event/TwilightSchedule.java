@@ -29,6 +29,7 @@ import net.ragnar.ragnarstwilightdimension.sound.TwilightLeviathan;
  *   <tr><td>166</td><td>{@link BloodMoon}</td><td>600, so one cycle in three</td></tr>
  *   <tr><td>183</td><td>{@link Stare}</td><td>200</td></tr>
  *   <tr><td>116</td><td>{@link net.ragnar.ragnarstwilightdimension.entity.WitnessSpawner}</td><td>200</td></tr>
+ *   <tr><td>150</td><td>{@link net.ragnar.ragnarstwilightdimension.sound.ChurchBell}</td><td>24000, so one cycle in 120</td></tr>
  * </table>
  *
  * <p>Nothing shares a tick with anything else, and that is the property this file exists to keep - it
@@ -66,6 +67,17 @@ public final class TwilightSchedule {
 
 	/** Every 200 ticks, in the gap between the ambience's second roll and the wanderer's. */
 	public static final int WITNESS = 116;
+
+	/**
+	 * Every 24000 ticks - a day, and by a long way the slowest thing on this clock.
+	 *
+	 * <p>12150 is halfway through, so the bell lands in the middle of the day rather than on the tick
+	 * the day turns over. What makes it safe is the last two digits: 150 is 50 past the ambience's
+	 * every-100 roll, and 150 modulo 200 clears all five of the 200-tick phases above, and modulo 600
+	 * it is 150 rather than the blood moon's 366. A day is a whole number of every interval on this
+	 * clock, so those three checks are the only ones there are.
+	 */
+	public static final int BELL = 12150;
 
 	private TwilightSchedule() {
 	}
