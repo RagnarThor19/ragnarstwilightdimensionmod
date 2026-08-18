@@ -463,8 +463,11 @@ public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
 	 * <p>Grass and other replaceable growth is looked straight through - this runs after the
 	 * vegetation pass, so the topmost block in a column is very often a tuft of grass rather than the
 	 * terrain itself.
+	 *
+	 * <p>Package-private rather than private so {@link PillarFeature} can stand its column on exactly
+	 * the same ground the grave beside it is dug into, off the same check.
 	 */
-	private static BlockPos findGround(StructureWorldAccess world, BlockPos column) {
+	static BlockPos findGround(StructureWorldAccess world, BlockPos column) {
 		BlockPos.Mutable pos = new BlockPos.Mutable(column.getX(), column.getY() + 1, column.getZ());
 
 		for (int i = 0; i < GROUND_SEARCH_DEPTH; i++) {
@@ -490,7 +493,8 @@ public class GravestoneFeature extends Feature<DefaultFeatureConfig> {
 		return !state.isAir() && !state.isReplaceable() && state.getFluidState().isEmpty();
 	}
 
-	private static boolean isFree(StructureWorldAccess world, BlockPos pos) {
+	/** Whether this block can be built through. Shared with {@link PillarFeature}, which needs a clear column. */
+	static boolean isFree(StructureWorldAccess world, BlockPos pos) {
 		BlockState state = world.getBlockState(pos);
 		return (state.isAir() || state.isReplaceable()) && state.getFluidState().isEmpty();
 	}

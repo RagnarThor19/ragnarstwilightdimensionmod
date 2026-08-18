@@ -113,6 +113,62 @@ Rules for it, in descending order of importance:
    correspondence, and a correspondence has an author.
 3. Leave it unsigned. A signed book has a name on it, and a name is a person, and there are no people.
 
+### The church was stocked from the far end of the errand
+
+The one building in the dimension with more than one container in it, and the only one whose contents
+come from *past* the crossing rather than before it. **[built]**
+
+- The chest at the altar rolls the **end city treasure** table —
+  `loot_table/chests/church_altar.json`.
+- The four barrels at the west end, under the bell tower, roll **stronghold** — corridor, crossing and
+  library, weighted in that order — `loot_table/chests/church_barrel.json`.
+
+**Meaning:** the graves say the dead were stronghold-bound, on the way, carrying the fare. The church
+says somebody got further than that. What is in the barrels is a stronghold's stores, and what is on
+the altar came off the far side of a portal the player has paid one twelfth of.
+
+And in all of it there is **not one eye**. Neither vanilla table contains one, and the barrels go a
+step further: they run the same filter the gravestones do, so the eye armour trim — the only
+eye-shaped thing a stronghold library can produce — never turns up here either. Somebody carried End
+plunder into this building and then stopped, in the one place where an eye is the only thing worth
+having.
+
+Rules:
+
+1. **Never put an eye in the church.** The graves and the house are the only two places the fare comes
+   from, and opening either one costs something. This building is the counter-example, and it stops
+   being one the moment it can pay for a crossing.
+2. **Never let the loot explain the window.** Below. The plunder says where these people had been; it
+   must never be made to say what they were looking at.
+
+### The window behind the altar
+
+The church's glazing is mottled — white and light gray panes mixed a couple at a time, the way old
+glass is. Behind the altar, in the east wall, there is one that is not: a **five-by-five square of
+plain white**, unbroken, no pattern and no colour, filling the wall the altar stands against.
+**[built]** — `structure/twilight_church.nbt`, x=23, y4–8, z4–8.
+
+It is the only square of flat white anywhere in the dimension except one, and the other one hangs in
+the air with no face on it (§4, *The blank one*).
+
+Three things face it and none of them say anything:
+
+- The **churchgoer** sits two rows back on the aisle, facing the altar, and he is the only figure in
+  the mod that will not turn to look at the player. **[built]** — `ChurchSteveEntity`. Whatever he is
+  here for is in front of him, and it does not move.
+- The **witness** stands out in the fields with its arm up, jabbing at a sky this dimension does not
+  draw. **[built]** — `WitnessEntity`.
+- Somebody built a room around a white square and then put the seating in facing it.
+
+**Never join these up.** The window is a window: five by five because that is what a window in a
+church is. The reading — that what the witness is pointing at is what has been glazed into the east
+wall, and that the pale figure is that thing arriving — belongs to any player who has seen all three,
+and nothing in the mod may confirm it. No particle, no sound, no entity spawning behind the glass, no
+advancement, and above all **no second white square anywhere else in the world**. It works because it
+is the same shape twice and nothing else, and a third one is a motif.
+
+Who it is a picture of is not answerable, and is not going to be answered. See §7.
+
 ### Somebody got here first
 
 Rarely — four times rarer than an ordinary grave — a grave generates that has **already been dug
@@ -160,6 +216,37 @@ Rules for it:
    and the first one stays exactly where it is. Nothing merges, nothing expires, nothing is returned.
 3. **Never let it despawn.** Items on the floor last five minutes. The point of the grave is that it
    lasts as long as every other grave here does, which is forever.
+
+### Somebody left the other way
+
+Very rarely, a column of **oak planks twenty-two blocks high**, one block wide, with an **emptied
+grave against the foot of it**. Nothing on top, no ladder, no door, nothing inside — and no watcher at
+the grave, because there is nothing left in it to stand over. **[built]** — `PillarFeature`,
+`worldgen/placed_feature/pillar.json`
+
+It is the only thing in the dimension that is unambiguously **somebody's work**. The house and the
+church were remembered from somewhere else and arrive whole; this was put up here, by hand, out of the
+one material the place has any of, by somebody who was already standing in it.
+
+**Meaning:** it is only legible to a player who has already died here once — who therefore knows that
+dying does not stop the game (§3, *You are not asked*) and that you are buried where you fall (§3,
+*You get one too*). The fare out is an eye. Whoever built this did not have one. This is the other way
+out, and it is the one decision in the mod that was made by a person rather than by the place.
+
+The grave being **open** is the half that puts somebody else in the world. It was dug by the
+dimension, the way a player's is, and then it was emptied — by them, come back through the portal for
+their own things, or by whatever it is that opens the others (§3, *Somebody got here first*). Both
+readings are worth having and neither is confirmed.
+
+Rules:
+
+1. **Never sign it.** No name on the sign, no book at the base, no chest of leftovers, nothing on top.
+   The building is the whole statement and it is already one sentence longer than anything else here.
+2. **Never say whether it worked.** Twenty-two blocks is nineteen damage, one short of killing anybody
+   who went off it at full health. So it is either the second attempt or the wrong height, and the mod
+   has no opinion. Do not round it up to a lethal number to tidy the arithmetic — the ambiguity is
+   load-bearing.
+3. **Never generate two near each other.** One person did this once. A field of them is a mechanic.
 
 ### Something looks at you, and it is nearer every time
 
@@ -221,6 +308,33 @@ it is dry. **[built]** — `worldgen/noise_settings/twilight.json`
 
 **Meaning:** the place kept the number and lost what it was for. It is built at the height something
 else's ground was.
+
+### There is nothing under the ground
+
+The terrain is a **shell**. Below **y0** every block in the world is air, all the way down to a single
+flat, unbroken layer of **bedrock at y-64** — no deepslate, no caves, no ore, no roughness on the
+floor. **[built]** — the surface rules in `worldgen/noise_settings/twilight.json`
+
+**Meaning:** this answers §8's standing question about y-64, and it answers it with nothing, which is
+the only answer this dimension has ever given. The place declares a sea level down there (§3, *The
+ground is at somebody else's sea level*) and what is actually at it is a floor, dry, level, and lit by
+nothing at all — the dimension has no skylight, so the entire room under the world is in absolute
+darkness. It is the largest space in the mod and there is not one thing in it.
+
+It also makes the ground finite in a way it has never been in Minecraft. Digging down anywhere gets
+you through the slab in under a minute and then there is nothing to dig — you fall, in the dark, into a
+room the size of the world, and the only thing to find at the bottom is that there is nothing to find.
+The disguise was skin-deep and the skin is all there is.
+
+Rules:
+
+1. **Never put anything down there.** No structure, no light, no sound, no floor detail, no second
+   bedrock texture. The room is worth having precisely because it is the one place a player can search
+   exhaustively, and the reward for searching it must be nothing.
+2. **Never seal it off.** The slab is thin enough to dig through on purpose. It is allowed to be found.
+3. The slab comes out around sixty-four blocks thick, and that is two numbers that were already there
+   meeting by accident. **Do not dress it up as another 64** — §5 works because the number is used
+   once, deliberately, for one thing.
 
 ### The sky is not dim, it is absent
 
@@ -401,8 +515,13 @@ The same distance you got.
 
 ### Endstone underneath
 
-The surface keeps pretending to be the Overworld. Below some depth the stone becomes endstone. The
-disguise is skin-deep, and digging is what finds out. Makes "stopped halfway" vertical and literal.
+The surface keeps pretending to be the Overworld. Make the bottom courses of the slab endstone, so a
+player digging down passes through it on the way out of the world. The disguise is skin-deep, and
+digging is what finds out. Makes "stopped halfway" vertical and literal.
+
+Now that there is nothing under y0 (§3, *There is nothing under the ground*), this is a change to the
+last few blocks before the drop rather than to everything below a depth — which is better, because it
+is a thing the player passes through in one second on the way to finding out there is nothing there.
 
 ### Numbered signs
 
@@ -432,6 +551,14 @@ Rooms that were remembered from the inside.
 - **Who is buried in the graves.** The loot table already says everything necessary about them.
 - **What is on the other side of the crossing you did not complete.** The End is a real place the
   player can go by other means. Nothing here should confirm that it is the same End.
+- **Whether the one who built the plank column got out.** The height is one block short of lethal from
+  full health and the grave beside it has been emptied. Both facts are in the world already; neither
+  is ever to be resolved, by a body, a second column, a sign, or anything else.
+- **What the window behind the altar is a picture of.** The shape is stated three times — glazed into
+  the east wall, pointed at from the fields, and drifting towards the player with no face on it — and
+  the answer exists nowhere, in no file, and never will. Naming it turns the best scene in the mod
+  into a mob with a backstory. The only correct response to a player who asks is the one the
+  dimension gives to everything else they ask: nothing.
 
 ---
 
@@ -444,4 +571,6 @@ Rooms that were remembered from the inside.
 - Should the wanderer be going *somewhere specific* — the same bearing every time, world-wide — so a
   player who tracks several of them finds something at the convergence? Currently its bearing is
   random.
-- Is there anything at all at y-64, where the dimension says its sea is?
+- ~~Is there anything at all at y-64, where the dimension says its sea is?~~ Answered: there is a floor
+  and there is nothing on it. See §3, *There is nothing under the ground*. The question is spent and
+  must not be reopened by putting something down there later.

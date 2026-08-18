@@ -27,6 +27,18 @@ public final class ModFeatures {
 			Identifier.of(RagnarsTwilightDimension.MOD_ID, "open_grave"),
 			new GravestoneFeature(DefaultFeatureConfig.CODEC, GravestoneFeature.Kind.OPENED));
 
+	/**
+	 * The plank column and the emptied grave at the foot of it. Referenced by
+	 * {@code worldgen/configured_feature/pillar.json} and placed by
+	 * {@code worldgen/placed_feature/pillar.json}, rarer than either grave - there is meant to be about
+	 * one of these for every several worlds a player walks across, and it means nothing to somebody who
+	 * has not already found the ordinary graves first.
+	 */
+	public static final Feature<DefaultFeatureConfig> PILLAR = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "pillar"),
+			new PillarFeature(DefaultFeatureConfig.CODEC));
+
 	private ModFeatures() {
 	}
 
