@@ -7,8 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameRules;
+import net.ragnar.ragnarstwilightdimension.portal.BlankReturns;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.feature.GravestoneFeature;
 
@@ -57,7 +59,10 @@ public final class PlayerGrave {
 		if (!(player.getWorld() instanceof ServerWorld world)) {
 			return false;
 		}
-		if (!ModDimensions.TWILIGHT_WORLD.equals(world.getRegistryKey())) {
+
+		// Where the grave goes, which is not always where they died - see graveSiteFor.
+		GraveSite site = graveSiteFor(player, world);
+		if (site == null) {
 			return false;
 		}
 
@@ -86,12 +91,47 @@ public final class PlayerGrave {
 		GravestoneFeature.Burial burial = new GravestoneFeature.Burial(
 				Text.literal(player.getGameProfile().getName()), belongings);
 
-		if (!GravestoneFeature.placeBurial(world, player.getBlockPos(),
+		if (!GravestoneFeature.placeBurial(site.world(), site.pos(),
 				Direction.fromRotation(player.getYaw()), burial)) {
 			return false;
 		}
 
 		inventory.clear();
 		return true;
+	}
+
+	/** A world and a block in it to dig the grave at. */
+	private record GraveSite(ServerWorld world, BlockPos pos) {
+	}
+
+	/**
+	 * Where this death buries, or null if it does not bury at all.
+	 *
+	 * <p>The twilight buries you where you fell, which is the whole of the idea: the loot stays in the
+	 * place that killed you.
+	 *
+	 * <p>The disc cannot. It is sealed - the way in costs twelve eyes and the way out only opens when
+	 * the blank one is dead - so a grave left standing on it is not a hard walk back, it is a second
+	 * fight for the right to try. Burying at the temple the player came in through keeps what losing
+	 * costs proportionate to the trip: the eyes and the walk, not the inventory.
+	 *
+	 * <p>Anywhere else is vanilla's, and scatters.
+	 */
+	private static GraveSite graveSiteFor(ServerPlayerEntity player, ServerWorld world) {
+		if (ModDimensions.TWILIGHT_WORLD.equals(world.getRegistryKey())) {
+			return new GraveSite(world, player.getBlockPos());
+		}
+
+		if (!ModDimensions.BLANK_WORLD.equals(world.getRegistryKey())) {
+			return null;
+		}
+
+		ServerWorld twilight = player.getServer().getWorld(ModDimensions.TWILIGHT_WORLD);
+		BlockPos temple = BlankReturns.get(player.getServer()).returnPoint(player.getUuid());
+
+		// Somebody who reached the disc without going through a portal - an operator, a fresh world -
+		// has no temple to be sent back to, and gets vanilla's scatter rather than a grave
+		// dropped at an arbitrary place.
+		return twilight != null && temple != null ? new GraveSite(twilight, temple) : null;
 	}
 }

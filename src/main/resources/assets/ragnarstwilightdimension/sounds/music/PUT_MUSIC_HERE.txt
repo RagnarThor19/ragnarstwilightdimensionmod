@@ -1,8 +1,9 @@
-Drop the three track files in THIS folder, named exactly:
+Drop the track files in THIS folder, named exactly:
 
     twilight_1.ogg
     twilight_2.ogg
     twilight_3.ogg
+    twilight_4.ogg
 
 Format
 ------

@@ -1,0 +1,10 @@
+{
+	"type": "ragnarstwilightdimension:the_blank",
+	"generator": {
+		"type": "ragnarstwilightdimension:disc",
+		"biome_source": {
+			"type": "minecraft:fixed",
+			"biome": "ragnarstwilightdimension:the_blank"
+		}
+	}
+}

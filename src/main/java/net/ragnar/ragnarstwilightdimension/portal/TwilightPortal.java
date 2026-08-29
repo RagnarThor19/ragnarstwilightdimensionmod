@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -56,18 +57,21 @@ public final class TwilightPortal {
 	private static final int ARRIVAL_SEARCH_Y = 8;
 
 	/**
-	 * A ruin template and where inside it the portal frame sits, relative to the template origin.
-	 * The twilight's ruin is a much smaller plinth than the overworld's, so the frame sits nearer
-	 * its corner.
+	 * A ruin template and where inside it the portal frame sits, as an offset from the template
+	 * origin. The two ruins are different shapes - the twilight's is a small plinth, the
+	 * overworld's a taller shell - so both the horizontal centre and the height of the frame
+	 * above the floor layer have to be read off each template rather than assumed.
+	 *
+	 * <p>These must be kept in step with the .nbt files: re-export a ruin and the frame can move.
 	 */
-	private record Ruin(Identifier template, int frameOffset) {
+	private record Ruin(Identifier template, Vec3i frameOffset) {
 	}
 
 	private static final Ruin OVERWORLD_RUIN =
-			new Ruin(Identifier.of(RagnarsTwilightDimension.MOD_ID, "ruin"), 5);
+			new Ruin(Identifier.of(RagnarsTwilightDimension.MOD_ID, "overworld_ruin"), new Vec3i(4, 2, 4));
 
 	private static final Ruin TWILIGHT_RUIN =
-			new Ruin(Identifier.of(RagnarsTwilightDimension.MOD_ID, "twilight_ruin"), 2);
+			new Ruin(Identifier.of(RagnarsTwilightDimension.MOD_ID, "twilight_ruin"), new Vec3i(2, 1, 2));
 
 	private TwilightPortal() {
 	}
@@ -190,7 +194,8 @@ public final class TwilightPortal {
 
 	private static BlockPos placeRuin(ServerWorld world, int x, int z, int surface, Ruin ruin) {
 		int floorY = surface - 1;   // the template's floor layer replaces the top terrain block
-		BlockPos frame = new BlockPos(x, floorY + 1, z);
+		Vec3i offset = ruin.frameOffset();
+		BlockPos frame = new BlockPos(x, floorY + offset.getY(), z);
 
 		StructureTemplate template = world.getStructureTemplateManager()
 				.getTemplate(ruin.template())
@@ -203,7 +208,7 @@ public final class TwilightPortal {
 			return frame;
 		}
 
-		BlockPos origin = new BlockPos(x - ruin.frameOffset(), floorY, z - ruin.frameOffset());
+		BlockPos origin = new BlockPos(x - offset.getX(), floorY, z - offset.getZ());
 		template.place(world, origin, origin, new StructurePlacementData().setIgnoreEntities(true),
 				world.getRandom(), Block.NOTIFY_LISTENERS);
 		return frame;

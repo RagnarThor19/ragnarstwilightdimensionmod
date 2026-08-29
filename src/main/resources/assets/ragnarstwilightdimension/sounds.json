@@ -13,6 +13,10 @@
 			{
 				"name": "ragnarstwilightdimension:music/twilight_3",
 				"stream": true
+			},
+			{
+				"name": "ragnarstwilightdimension:music/twilight_4",
+				"stream": true
 			}
 		]
 	},
@@ -39,6 +43,15 @@
 		"sounds": [
 			{
 				"name": "ragnarstwilightdimension:music/twilight_3",
+				"stream": true
+			}
+		]
+	},
+	"music.twilight_4": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/twilight_4",
 				"stream": true
 			}
 		]

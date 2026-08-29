@@ -179,8 +179,14 @@ public final class ChurchBell {
 		return ringing.size();
 	}
 
-	/** One tower: the block swings if it is loaded, and the sound goes out either way. */
-	private static void toll(ServerWorld world, BlockPos bell) {
+	/**
+	 * One tower: the block swings if it is loaded, and the sound goes out either way.
+	 *
+	 * <p>Public because the temple borrows it - see { TempleGate}. Lighting a temple portal rings
+	 * the bell hanging over the ring, and it is the same block, the same swing and the same sound as a
+	 * church, so it is the same call.
+	 */
+	public static void toll(ServerWorld world, BlockPos bell) {
 		WorldChunk chunk = loadedChunk(world, new ChunkPos(bell));
 		if (chunk != null) {
 			BlockState state = chunk.getBlockState(bell);

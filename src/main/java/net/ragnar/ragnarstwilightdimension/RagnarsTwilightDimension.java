@@ -4,7 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.ragnar.ragnarstwilightdimension.command.GravestoneCommand;
 import net.ragnar.ragnarstwilightdimension.command.SilhouetteCommand;
 import net.ragnar.ragnarstwilightdimension.entity.ModEntities;
+import net.ragnar.ragnarstwilightdimension.block.ModBlocks;
 import net.ragnar.ragnarstwilightdimension.command.BellCommand;
+import net.ragnar.ragnarstwilightdimension.command.BlankCommand;
 import net.ragnar.ragnarstwilightdimension.command.BloodMoonCommand;
 import net.ragnar.ragnarstwilightdimension.command.StareCommand;
 import net.ragnar.ragnarstwilightdimension.command.WitnessCommand;
@@ -18,6 +20,7 @@ import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
 import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.WandererSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.WitnessSpawner;
+import net.ragnar.ragnarstwilightdimension.portal.TempleGate;
 import net.ragnar.ragnarstwilightdimension.portal.TwilightPortal;
 import net.ragnar.ragnarstwilightdimension.sound.ModSounds;
 import net.ragnar.ragnarstwilightdimension.sound.ChurchBell;
@@ -25,6 +28,7 @@ import net.ragnar.ragnarstwilightdimension.sound.TwilightAmbience;
 import net.ragnar.ragnarstwilightdimension.sound.TwilightLeviathan;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.feature.ModFeatures;
+import net.ragnar.ragnarstwilightdimension.world.gen.ModChunkGenerators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +46,13 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		ModSounds.initialize();
 		ModEntities.initialize();
 		ModFeatures.initialize();
+		ModBlocks.initialize();
+		ModChunkGenerators.initialize();
 		BloodMoonPayload.register();
 		StarePayload.register();
 		WitnessPayload.register();
 		TwilightPortal.register();
+		TempleGate.register();
 		SilhouetteSpawner.register();
 		WandererSpawner.register();
 		WitnessSpawner.register();
@@ -62,6 +69,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		StareCommand.register();
 		BellCommand.register();
 		WitnessCommand.register();
+		BlankCommand.register();
 		LOGGER.info("Twilight dimension loaded ({})", ModDimensions.TWILIGHT_WORLD.getValue());
 	}
 

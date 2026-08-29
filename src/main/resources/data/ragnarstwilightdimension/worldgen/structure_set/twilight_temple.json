@@ -1,0 +1,15 @@
+{
+	"structures": [
+		{
+			"structure": "ragnarstwilightdimension:twilight_temple",
+			"weight": 1
+		}
+	],
+	"placement": {
+		"type": "minecraft:random_spread",
+		"spread_type": "linear",
+		"spacing": 128,
+		"separation": 64,
+		"salt": 448120973
+	}
+}

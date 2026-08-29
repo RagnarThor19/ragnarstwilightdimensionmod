@@ -5,7 +5,7 @@
 			"weight": 1,
 			"element": {
 				"element_type": "minecraft:single_pool_element",
-				"location": "ragnarstwilightdimension:overworld_ruin",
+				"location": "ragnarstwilightdimension:twilight_temple",
 				"processors": "minecraft:empty",
 				"projection": "rigid"
 			}

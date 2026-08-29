@@ -51,7 +51,12 @@ public final class TwilightRespawn {
 	 * outright, so a world that was already set to respawn immediately keeps doing it.
 	 */
 	private static void update(ServerPlayerEntity player) {
-		boolean immediate = ModDimensions.TWILIGHT_WORLD.equals(player.getWorld().getRegistryKey())
+		// The disc counts too. Dying there is one of the two ways the trip is meant to end, and the way
+		// it is meant to end is the way it ends in the twilight: no screen, no choice, somewhere else.
+		boolean sealed = ModDimensions.TWILIGHT_WORLD.equals(player.getWorld().getRegistryKey())
+				|| ModDimensions.BLANK_WORLD.equals(player.getWorld().getRegistryKey());
+
+		boolean immediate = sealed
 				|| player.getWorld().getGameRules().getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
 
 		player.networkHandler.sendPacket(

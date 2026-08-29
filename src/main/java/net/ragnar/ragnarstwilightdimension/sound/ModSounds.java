@@ -12,13 +12,14 @@ import net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimension;
  * {@code assets/ragnarstwilightdimension/sounds/music/} and are wired up by {@code sounds.json}.
  */
 public final class ModSounds {
-	/** The dimension's music. Holds all three tracks, so the game picks one at random each time. */
+	/** The dimension's music. Holds every track, so the game picks one at random each time. */
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT = register("music.twilight");
 
 	/** Individually addressable tracks, handy for {@code /playsound} while testing. */
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_1 = register("music.twilight_1");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_2 = register("music.twilight_2");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_3 = register("music.twilight_3");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_4 = register("music.twilight_4");
 
 	/** The blood moon track. Replaces the ordinary playlist for as long as the event is up. */
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_BLOODMOON = register("music.bloodmoon");
