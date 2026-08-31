@@ -13,4 +13,10 @@ public final class TwilightClient {
 		ClientWorld world = MinecraftClient.getInstance().world;
 		return world != null && world.getRegistryKey() == ModDimensions.TWILIGHT_WORLD;
 	}
+
+	/** The disc the blank one lives on, which is a different world with different rules. */
+	public static boolean isInBlank() {
+		ClientWorld world = MinecraftClient.getInstance().world;
+		return world != null && world.getRegistryKey() == ModDimensions.BLANK_WORLD;
+	}
 }

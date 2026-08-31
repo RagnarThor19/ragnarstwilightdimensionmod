@@ -71,6 +71,21 @@ public class BloodSteveEntity extends HostileEntity {
 		this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
 	}
 
+	/**
+	 * Whether something other than the blood moon is keeping it here.
+	 *
+	 * <p>These exist because of an event, and outside it they remove themselves on their first tick -
+	 * which is right, and is why one summoned into an ordinary night vanishes. The boss fight is the
+	 * one other thing entitled to put them somewhere: it throws five onto the disc, in a dimension the
+	 * blood moon does not reach, and they have to still be there on the tick after that.
+	 */
+	private boolean unbound;
+
+	/** Hands ownership to whatever summoned it. See {@link #unbound}. */
+	public void setUnbound() {
+		this.unbound = true;
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -79,8 +94,9 @@ public class BloodSteveEntity extends HostileEntity {
 			return;
 		}
 
-		// The event owning them is the only thing keeping them here.
-		if (!BloodMoon.isActive()) {
+		// The event owning them is the only thing keeping them here - unless something else has taken
+		// ownership. See setUnbound.
+		if (!this.unbound && !BloodMoon.isActive()) {
 			this.discard();
 			return;
 		}

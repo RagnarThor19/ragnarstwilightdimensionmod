@@ -2,6 +2,8 @@ package net.ragnar.ragnarstwilightdimension.client.render;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.util.Identifier;
@@ -31,6 +33,27 @@ public class PaleFigureRenderer extends MobEntityRenderer<PaleFigureEntity, Play
 		this.model.rightSleeve.visible = false;
 		this.model.leftPants.visible = false;
 		this.model.rightPants.visible = false;
+
+		// So one of them can carry a bow. Every other blank figure in the mod holds nothing and draws
+		// nothing extra for this - an empty stack renders as an empty hand - so the feature costs the
+		// ones that are only standing there absolutely nothing. See {@code ArcherAttack}.
+		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
+	}
+
+	/**
+	 * Draws it at whatever size it was given.
+	 *
+	 * <p>One for every blank figure in the mod except the four that stand at the rim during the boss
+	 * fight. The hitbox is unchanged and stays player-sized, which is deliberate - see
+	 * {@link PaleFigureEntity} for why the box and the drawing are allowed to disagree.
+	 */
+	@Override
+	protected void scale(PaleFigureEntity entity, MatrixStack matrices, float tickDelta) {
+		float scale = entity.scale();
+
+		if (scale != 1.0F) {
+			matrices.scale(scale, scale, scale);
+		}
 	}
 
 	@Override

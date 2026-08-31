@@ -74,6 +74,51 @@
 			}
 		]
 	},
+	"music.entity_start": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/entitystart",
+				"stream": true
+			}
+		]
+	},
+	"music.entity": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/entity",
+				"stream": true
+			}
+		]
+	},
+	"music.entity_pause_1": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/entitypause1",
+				"stream": true
+			}
+		]
+	},
+	"music.entity_pause_2": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/entitypause2",
+				"stream": true
+			}
+		]
+	},
+	"music.entity_pause_3": {
+		"category": "music",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:music/entitypause3",
+				"stream": true
+			}
+		]
+	},
 	"ambience.twilight": {
 		"category": "ambient",
 		"sounds": [

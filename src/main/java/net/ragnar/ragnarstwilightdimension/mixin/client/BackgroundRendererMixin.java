@@ -6,6 +6,7 @@ import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.client.world.ClientWorld;
+import net.ragnar.ragnarstwilightdimension.client.BlankFog;
 import net.ragnar.ragnarstwilightdimension.client.BloodMoonClient;
 import net.ragnar.ragnarstwilightdimension.client.StareClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightClient;
@@ -85,5 +86,35 @@ public class BackgroundRendererMixin {
 		RenderSystem.setShaderFogStart(TwilightFog.FOG_START);
 		RenderSystem.setShaderFogEnd(end > 0.0F ? end : TwilightFog.FOG_END);
 		RenderSystem.setShaderFogShape(FogShape.SPHERE);
+	}
+
+	/**
+	 * Undoes the Nether's thick fog on the disc.
+	 *
+	 * <p>The disc's dimension type borrows {@code minecraft:the_nether} effects for one reason - it is
+	 * the vanilla set with no sky drawn, which is what puts flat black behind everything. Thick fog
+	 * comes bundled into that same object and is not wanted: it is fully opaque at ninety-six blocks,
+	 * and the eyes hang out past eighty.
+	 *
+	 * <p>So this puts back the fog the dimension would have had without the borrowed effects. See
+	 * {@link BlankFog} - the numbers there are vanilla's own, not a mod's idea of good fog.
+	 *
+	 * <p>Separate from the twilight's injection above rather than folded into it. That one is a
+	 * deliberate eleven-block room with the witness allowed to change its size; this one is only
+	 * cancelling something that was never meant to apply. Sharing a method would tie the two together
+	 * for no reason beyond both being fog.
+	 */
+	@Inject(method = "applyFog", at = @At("RETURN"))
+	private static void twilight$applyBlankFog(Camera camera, BackgroundRenderer.FogType fogType,
+											   float viewDistance, boolean thickFog, float tickDelta,
+											   CallbackInfo ci) {
+		// Water, lava and powder snow keep their own fog here exactly as they do in the twilight.
+		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightClient.isInBlank()) {
+			return;
+		}
+
+		RenderSystem.setShaderFogStart(BlankFog.start(fogType, viewDistance));
+		RenderSystem.setShaderFogEnd(BlankFog.end(viewDistance));
+		RenderSystem.setShaderFogShape(FogShape.CYLINDER);
 	}
 }

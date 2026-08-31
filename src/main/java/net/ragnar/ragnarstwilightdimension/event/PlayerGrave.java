@@ -127,11 +127,68 @@ public final class PlayerGrave {
 		}
 
 		ServerWorld twilight = player.getServer().getWorld(ModDimensions.TWILIGHT_WORLD);
-		BlockPos temple = BlankReturns.get(player.getServer()).returnPoint(player.getUuid());
+		BlockPos ring = BlankReturns.get(player.getServer()).returnPoint(player.getUuid());
 
 		// Somebody who reached the disc without going through a portal - an operator, a fresh world -
-		// has no temple to be sent back to, and gets vanilla's scatter rather than a grave
-		// dropped at an arbitrary place.
-		return twilight != null && temple != null ? new GraveSite(twilight, temple) : null;
+		// has no temple to be sent back to, and gets vanilla's scatter rather than a grave dropped at
+		// an arbitrary place.
+		if (twilight == null || ring == null) {
+			return null;
+		}
+
+		BlockPos outside = besideTemple(twilight, ring);
+		return outside != null ? new GraveSite(twilight, outside) : null;
+	}
+
+	/**
+	 * How far out from the ring the grave goes.
+	 *
+	 * <p>The building is thirteen across with the ring in the middle, so its outer wall is six blocks
+	 * from the ring. A grave is three blocks long and { placeBurial} picks which way it runs
+	 * itself, so it can reach two blocks back toward the temple from wherever it is anchored - ten out
+	 * leaves the nearest it can possibly get at eight, two clear of the wall, whichever way it turns.
+	 * At eight it could just reach the wall and knock a hole in it.
+	 */
+	private static final int CLEAR_OF_TEMPLE = 10;
+
+	/** How far below the ring to look for ground. The ring stands on a plinth a few blocks up. */
+	private static final int GROUND_SEARCH_DOWN = 12;
+
+	/**
+	 * Open ground outside the temple, or null if there is none.
+	 *
+	 * <p>What is remembered is the portal block itself, and that is the one place in the building the
+	 * grave must not go. It sits on a plinth in the middle of a stone room, and digging a grave there
+	 * would take the portal out and leave the chest standing where the pool was - so the way back in
+	 * would be gone and the way to the loot would be through twelve more eyes.
+	 *
+	 * <p>So the grave goes outside the wall instead, on whatever the temple is standing on. All four
+	 * sides are tried, because a temple on a slope has a good one and a bad one; the first with ground
+	 * and room above it wins. If every side is buried or hanging over a drop this gives up, and the
+	 * death scatters the ordinary way rather than sealing somebody's belongings inside a hill.
+	 *
+	 * @param ring the remembered portal block, which is within one block of the middle of the ring -
+	 *             near enough, against an eight block offset, that snapping it exactly is not worth
+	 *             the search it would cost
+	 */
+	private static BlockPos besideTemple(ServerWorld twilight, BlockPos ring) {
+		for (Direction side : Direction.Type.HORIZONTAL) {
+			BlockPos.Mutable cursor = ring.offset(side, CLEAR_OF_TEMPLE).mutableCopy();
+
+			for (int drop = 0; drop <= GROUND_SEARCH_DOWN; drop++) {
+				cursor.setY(ring.getY() - drop);
+
+				boolean footing = twilight.getBlockState(cursor).isSolidBlock(twilight, cursor);
+				boolean room = twilight.getBlockState(cursor.up()).isAir()
+						&& twilight.getBlockState(cursor.up(2)).isAir();
+
+				if (footing && room) {
+					// placeBurial wants where the player would be standing, not the block underfoot.
+					return cursor.up().toImmutable();
+				}
+			}
+		}
+
+		return null;
 	}
 }

@@ -13,8 +13,14 @@ import net.minecraft.util.math.Vec3d;
  * been there leaves the chunks they already visited at the old size.
  */
 public final class TheBlank {
-	/** How far the floor reaches from the centre, in blocks, in every direction. */
-	public static final int RADIUS = 50;
+	/**
+	 * How far the floor reaches from the centre, in blocks, in every direction.
+	 *
+	 * <p>Changing this changes the world. Chunks somebody has already been to keep the disc they were
+	 * generated with, so a save that has been visited ends up with a seam where the two sizes meet -
+	 * delete the dimension folder, or use a fresh world, after moving it.
+	 */
+	public static final int RADIUS = 35;
 
 	/** The y of the topmost floor block. Players stand at {@code FLOOR_Y + 1}. */
 	public static final int FLOOR_Y = 64;

@@ -2,5 +2,7 @@
 	"entity.ragnarstwilightdimension.silhouette": "Silhouette",
 	"entity.ragnarstwilightdimension.church_steve": "Churchgoer",
 	"entity.ragnarstwilightdimension.witness": "THE WITNESS",
-	"block.ragnarstwilightdimension.temple_portal": "Temple Portal"
+	"entity.ragnarstwilightdimension.the_entity": "The Entity",
+	"block.ragnarstwilightdimension.temple_portal": "Temple Portal",
+	"entity.ragnarstwilightdimension.eye": "Eye"
 }

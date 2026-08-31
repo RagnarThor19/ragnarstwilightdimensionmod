@@ -151,18 +151,35 @@ public final class TempleGate {
 	/**
 	 * Opens the way off the disc.
 	 *
-	 * <p>Called when the blank one dies. There is no fight yet, so for now the only thing that calls
-	 * it is {@code BlankCommand} - but this is the whole of what "killing it lets you leave" has to
-	 * do, and the fight will not need to know anything about portals beyond calling this once.
+	 * <p>Called when The Entity dies, and by {@code /blank exit}, which exists so the return trip can
+	 * be tested without winning a five-minute fight first. Both go through here, so what the command
+	 * exercises is exactly what the death does.
+	 *
+	 * <p>Three blocks square of portal in the middle of the circle, in a ring of bedrock. The bedrock
+	 * is not decoration: the disc is a flat sheet of snow with nothing else on it anywhere, so the
+	 * ring is the only thing in the world that says the middle is now different from the rest of it -
+	 * and it is bedrock rather than anything else because it is the one block in the game that means
+	 * <i>this was not built, and you cannot unbuild it</i>.
 	 *
 	 * <p>Idempotent: opening a way out that is already open changes nothing.
 	 */
 	public static void openExit(ServerWorld blank) {
 		BlockState portal = ModBlocks.TEMPLE_PORTAL.getDefaultState();
+		BlockState bedrock = Blocks.BEDROCK.getDefaultState();
 
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				blank.setBlockState(TheBlank.EXIT.add(dx, 0, dz), portal, Block.NOTIFY_LISTENERS);
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				boolean inside = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
+				BlockPos at = TheBlank.EXIT.add(dx, 0, dz);
+
+				blank.setBlockState(at, inside ? portal : bedrock, Block.NOTIFY_LISTENERS);
+
+				// Under the portal as well as around it. The floor here is three blocks of snow like
+				// everywhere else, and a hole punched through the middle of it would drop whoever dug it
+				// out of the world - which the way home is not supposed to be a way of doing.
+				if (inside) {
+					blank.setBlockState(at.down(), bedrock, Block.NOTIFY_LISTENERS);
+				}
 			}
 		}
 

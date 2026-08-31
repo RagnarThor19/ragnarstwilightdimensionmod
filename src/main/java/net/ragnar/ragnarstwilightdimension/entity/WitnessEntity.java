@@ -837,6 +837,14 @@ public class WitnessEntity extends PathAwareEntity {
 			case FIGHTING -> tickFighting();
 			case DYING -> tickDying();
 		}
+
+		// The bar is the one thing it does to a client that vanilla will not take back on its own, so
+		// it is renewed here for as long as there is a fight and allowed to lapse the moment there is
+		// not - including the moment this method stops being called at all, which is what happens when
+		// whoever was fighting it dies alone and the field unloads behind them. See BossBarWatch.
+		if (getState() == State.FIGHTING || getState() == State.DYING) {
+			BossBarWatch.alive(this.bar);
+		}
 	}
 
 	private void tickWatching() {

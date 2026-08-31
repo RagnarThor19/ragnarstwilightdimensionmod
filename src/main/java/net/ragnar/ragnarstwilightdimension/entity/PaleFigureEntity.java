@@ -1,6 +1,9 @@
 package net.ragnar.ragnarstwilightdimension.entity;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -38,6 +41,21 @@ public class PaleFigureEntity extends MobEntity {
 	/** How far away it will still turn to face the one it is watching. */
 	private static final double LOOK_RANGE = 128.0;
 
+	/**
+	 * How much bigger than a player it is drawn, synced because only the client draws it.
+	 *
+	 * <p>One everywhere except the boss fight, where four of them stand at the rim of the disc at two
+	 * and a half - see {@code BeamAttack}. Big enough to be read from across seventy blocks, which is
+	 * the only reason to change it: at ordinary size, something standing that far out in the dark is a
+	 * smudge rather than a figure.
+	 *
+	 * <p>The hitbox does not change with it. Nothing can touch one of these in any case, so the box is
+	 * only what it is culled against, and a small box on a large figure is invisible from exactly the
+	 * distance it is meant to be seen from - so the box stays player-sized and the drawing gets bigger.
+	 */
+	private static final TrackedData<Float> SCALE =
+			DataTracker.registerData(PaleFigureEntity.class, TrackedDataHandlerRegistry.FLOAT);
+
 	/** Who it is here for. Null means it faces whoever is nearest instead. */
 	private UUID target;
 
@@ -53,6 +71,22 @@ public class PaleFigureEntity extends MobEntity {
 		// It is placed in mid-air by whatever spawns it and is never meant to be walked into, so it
 		// takes no part in collision at all.
 		this.noClip = true;
+	}
+
+	@Override
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SCALE, 1.0F);
+	}
+
+	/** How much bigger than a player to draw it. Read by the renderer. */
+	public float scale() {
+		return this.dataTracker.get(SCALE);
+	}
+
+	/** Has to be called before it is spawned, or every client sees one tick of the ordinary size. */
+	public void setScale(float scale) {
+		this.dataTracker.set(SCALE, scale);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {

@@ -34,6 +34,30 @@ public final class ModSounds {
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_WITNESS = register("music.witness");
 
 	/**
+	 * The Entity's four tracks, and the only music in the mod whose timing is load-bearing.
+	 *
+	 * <p>Every other track in this class is handed to vanilla's music tracker, which starts it
+	 * whenever it feels like it and picks the gap between plays at random. These four cannot work that
+	 * way: {@link #MUSIC_ENTITY} is the length of the survival phase and has to begin on the tick the
+	 * phase does, or the fight and its soundtrack drift apart within one loop. So the fight plays them
+	 * itself - see {@code TheEntityFightClient} - and the tracker is held off for the duration.
+	 *
+	 * <p>All four want to be <b>stereo</b>, like the witness's: they are played flat, at the listener,
+	 * with no position in the world at all.
+	 *
+	 * <ul>
+	 *   <li>{@code entitystart.ogg} - the thirty seconds before it notices anybody.
+	 *   <li>{@code entity.ogg} - sixty-four seconds, once per survival phase, exactly.
+	 *   <li>{@code entitypause1..3.ogg} - one of the three at random for each fifteen-second pause.
+	 * </ul>
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_ENTITY_START = register("music.entity_start");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_ENTITY = register("music.entity");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_ENTITY_PAUSE_1 = register("music.entity_pause_1");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_ENTITY_PAUSE_2 = register("music.entity_pause_2");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_ENTITY_PAUSE_3 = register("music.entity_pause_3");
+
+	/**
 	 * Custom atmosphere beds, one picked at random. The files are optional - drop them into
 	 * {@code sounds/ambience/} and flip {@code INCLUDE_CUSTOM_AMBIENCE} in {@code TwilightAmbience}.
 	 */

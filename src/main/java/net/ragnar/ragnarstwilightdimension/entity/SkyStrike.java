@@ -1,6 +1,7 @@
 package net.ragnar.ragnarstwilightdimension.entity;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -165,11 +166,11 @@ final class SkyStrike {
 	/**
 	 * One tick of warning, or the landing.
 	 *
-	 * @return true when it is finished with and the witness should drop it
+	 * @return true when it is finished with and the thing that laid it should drop it
 	 */
-	boolean tick(WitnessEntity witness) {
+	boolean tick(LivingEntity from) {
 		if (--this.ticksLeft <= 0) {
-			hurt(witness);
+			hurt(from);
 			burst();
 			return true;
 		}
@@ -231,12 +232,12 @@ final class SkyStrike {
 
 	// --- the landing ----------------------------------------------------------
 
-	private void hurt(WitnessEntity witness) {
+	private void hurt(LivingEntity from) {
 		Box reach = new Box(
 				this.centre.x - this.radius, this.centre.y - REACH_DOWN, this.centre.z - this.radius,
 				this.centre.x + this.radius, this.centre.y + REACH_UP, this.centre.z + this.radius);
 
-		DamageSource source = witness.getDamageSources().mobAttack(witness);
+		DamageSource source = from.getDamageSources().mobAttack(from);
 
 		for (PlayerEntity player : this.world.getEntitiesByClass(PlayerEntity.class, reach,
 				player -> !player.isSpectator() && player.isAlive())) {

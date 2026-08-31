@@ -38,6 +38,37 @@ public class WandererEntity extends MobEntity {
 	public static final double RUN_LENGTH = 48.0;
 
 	/**
+	 * How long this one's run actually is. Defaults to {@link #RUN_LENGTH} and is only ever different
+	 * for the boss fight, where the disc is seventy across and a forty-eight block run would stop dead
+	 * in the middle of the arena instead of crossing it. See {@code ChargeAttack}.
+	 */
+	private double runLength = RUN_LENGTH;
+
+	/**
+	 * Whether it walks the ground under it or holds the height it started at.
+	 *
+	 * <p>True everywhere in the twilight, which is hilly and where a runner that ignored it would walk
+	 * through the sides of things. False on the disc, which is one flat sheet at a known height with
+	 * nothing under it - and where reading the ground would be worse than useless: the run starts and
+	 * ends out past the rim, over the void, where the heightmap has no floor to report and the answer
+	 * is the bottom of the world. It would come in sinking and leave the same way.
+	 */
+	private boolean followGround = true;
+
+	/**
+	 * Whether it has stopped part way along its run.
+	 *
+	 * <p>A wanderer that stops is a contradiction everywhere else in the mod - the whole of what it is
+	 * out in the twilight is a thing that does not stop, does not turn, and cannot be caught. The boss
+	 * fight is the one place that gets broken on purpose, and it is broken exactly once, by the jumper.
+	 * See {@code JumperAttack}.
+	 *
+	 * <p>Paused is not finished: it keeps its heading, its yaw and its lifetime, and whatever paused it
+	 * is expected to be moving it by hand from then on.
+	 */
+	private boolean paused;
+
+	/**
 	 * Blocks per tick. A sprinting player manages about 0.28, so this clears them by roughly 60% -
 	 * chasing it does not just fail to close the gap, it loses ground fast.
 	 */
@@ -116,6 +147,18 @@ public class WandererEntity extends MobEntity {
 	 * @param direction which way it is heading - flattened and normalised here, so a rough vector is fine
 	 */
 	public void beginRun(Vec3d start, Vec3d direction) {
+		beginRun(start, direction, RUN_LENGTH);
+	}
+
+	/** The same, for a run that has to be longer or shorter than the one it was written for. */
+	public void beginRun(Vec3d start, Vec3d direction, double length) {
+		beginRun(start, direction, length, true);
+	}
+
+	/** The same, for a run across ground that should be ignored. See {@link #followGround}. */
+	public void beginRun(Vec3d start, Vec3d direction, double length, boolean followGround) {
+		this.runLength = length;
+		this.followGround = followGround;
 		Vec3d flat = new Vec3d(direction.x, 0.0, direction.z);
 		this.runDirection = flat.lengthSquared() < 1.0E-6 ? Vec3d.ZERO : flat.normalize();
 
@@ -127,6 +170,11 @@ public class WandererEntity extends MobEntity {
 		this.prevHeadYaw = yaw;
 
 		this.noClip = true;
+	}
+
+	/** Stops it where it stands without ending it. See {@link #paused}. */
+	public void pause() {
+		this.paused = true;
 	}
 
 	@Override
@@ -142,7 +190,9 @@ public class WandererEntity extends MobEntity {
 				return;
 			}
 
-			advance();
+			if (!this.paused) {
+				advance();
+			}
 		}
 
 		// Driven from how far it actually moved rather than from velocity, which it never has. This
@@ -171,7 +221,7 @@ public class WandererEntity extends MobEntity {
 		double x = this.getX() + this.runDirection.x * SPEED;
 		double z = this.getZ() + this.runDirection.z * SPEED;
 
-		this.setPosition(x, followGround(x, z), z);
+		this.setPosition(x, this.followGround ? followGround(x, z) : this.getY(), z);
 
 		float yaw = facing(this.runDirection);
 		this.setYaw(yaw);
@@ -181,7 +231,7 @@ public class WandererEntity extends MobEntity {
 		this.travelled += SPEED;
 		maybeStep();
 
-		if (this.travelled >= RUN_LENGTH) {
+		if (this.travelled >= this.runLength) {
 			this.discard();
 		}
 	}

@@ -125,12 +125,56 @@ public final class ModEntities {
 					.disableSummon()
 					.build("witness"));
 
+	/**
+	 * The eye out in the dark on the disc. Not a mob and not alive - a flat picture with a lifespan,
+	 * see {@link EyeEntity}.
+	 *
+	 * <p>The tracking range is asked for large and then clamped down by the server's view distance,
+	 * which is the real limit. Asking for more than can be granted costs nothing and means this is
+	 * never the thing that stops an eye being sent; {@code EyeSpawner} is where the distance is
+	 * actually held inside what a client will load.
+	 *
+	 * <p>The dimensions are the picture's own size, so that the box it is culled against is the thing
+	 * you can see. No summon, like the other set pieces - use {@code /blank eye}.
+	 */
+	public static final EntityType<EyeEntity> EYE = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "eye"),
+			EntityType.Builder.create(EyeEntity::new, SpawnGroup.MISC)
+					.dimensions(EyeEntity.SIZE, EyeEntity.SIZE)
+					.maxTrackingRange(16)
+					.makeFireImmune()
+					.disableSummon()
+					.build("eye"));
+
+	/**
+	 * The Entity. No spawn egg and no {@code /summon}, like the other set pieces - it is placed by
+	 * {@link TheEntityFight} whenever somebody is standing on the disc, and one summoned anywhere
+	 * else would be a boss bar and a soundtrack in the middle of a field.
+	 *
+	 * <p>The tracking range is the number that matters. It is given in chunks, and it spends
+	 * sixty-four seconds at a time twenty blocks above a circle players stand thirty-five blocks out
+	 * on - so the far corner of the arena is around forty blocks away, and it carries a boss bar, a
+	 * soundtrack and a screen that goes black. A client that had stopped being told the thing exists
+	 * would keep all of it.
+	 */
+	public static final EntityType<TheEntity> THE_ENTITY = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "the_entity"),
+			EntityType.Builder.create(TheEntity::new, SpawnGroup.MISC)
+					.dimensions(TheEntity.WIDTH, TheEntity.HEIGHT)
+					.maxTrackingRange(16)
+					.makeFireImmune()
+					.disableSummon()
+					.build("the_entity"));
+
 	private ModEntities() {
 	}
 
 	public static void initialize() {
 		FabricDefaultAttributeRegistry.register(SILHOUETTE, SilhouetteEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(PALE_FIGURE, PaleFigureEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(THE_ENTITY, TheEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(WITNESS, WitnessEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(WANDERER, WandererEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(BLOOD_STEVE, BloodSteveEntity.createAttributes());

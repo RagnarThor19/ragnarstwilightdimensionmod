@@ -69,6 +69,15 @@ public final class TwilightSchedule {
 	public static final int WITNESS = 116;
 
 	/**
+	 * Every 200 ticks, in the gap between the leviathan at 66 and the witness at 116.
+	 *
+	 * <p>83 clears the every-100 ambience roll, is none of the five 200-tick phases, is not the blood
+	 * moon's 366 on its 600-tick cycle, and is not the bell's 150 - which is every check there is on
+	 * this clock.
+	 */
+	public static final int EYE = 83;
+
+	/**
 	 * Every 24000 ticks - a day, and by a long way the slowest thing on this clock.
 	 *
 	 * <p>12150 is halfway through, so the bell lands in the middle of the day rather than on the tick
