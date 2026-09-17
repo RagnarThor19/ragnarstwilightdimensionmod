@@ -8,9 +8,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.ragnar.ragnarstwilightdimension.entity.BlankVictory;
 import net.ragnar.ragnarstwilightdimension.entity.EyeEntity;
 import net.ragnar.ragnarstwilightdimension.entity.EyeSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.TheEntity;
+import net.ragnar.ragnarstwilightdimension.entity.WatcherEntity;
+import net.ragnar.ragnarstwilightdimension.entity.WatcherSpawner;
+import net.ragnar.ragnarstwilightdimension.entity.attack.WatcherAttack;
 import net.ragnar.ragnarstwilightdimension.portal.TempleGate;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
@@ -23,16 +27,21 @@ import java.util.List;
  * <ul>
  *   <li>{@code /blank exit} - opens the way off. The same {@link TempleGate#openExit} the kill calls,
  *       so what this exercises is exactly the code path the real thing takes.
- *   <li>{@code /blank eye} - puts an eye out in the dark, which otherwise rolls once every two
- *       minutes and is over inside half of one.
+ *   <li>{@code /blank eye} - puts an eye out in the dark. Nothing rolls for these any more, so this
+ *       is the only way one of the full-sized pictures ever appears.
+ *   <li>{@code /blank watcher} - stands another one up on the ring. There is always one out there
+ *       already; this is for looking at two of them, and for choosing where.
+ *   <li>{@code /blank watcher beam} - has the nearest of them fire at your feet, now, instead of
+ *       twice in a sixty-four second phase.
  *   <li>{@code /blank entity skip} - ends whatever phase The Entity is in and starts the next.
  *   <li>{@code /blank entity kill} - sends it up, from any phase.
+ *   <li>{@code /blank entity reset} - forgets that it was ever killed, so the disc puts one up again.
  * </ul>
  *
- * <p>The last two exist because the fight's shortest lap is a minute and a half and its shortest
- * <i>whole</i> run is about five minutes. Tuning the fifteen seconds it spends on the ground by
- * waiting sixty-four seconds for each attempt is not tuning, and neither is finding out whether the
- * death animation looks right by winning.
+ * <p>{@code skip} and {@code kill} exist because the fight's shortest lap is a minute and a half
+ * and its shortest <i>whole</i> run is about five minutes. Tuning the fifteen seconds it spends on
+ * the ground by waiting sixty-four seconds for each attempt is not tuning, and neither is finding
+ * out whether the death animation looks right by winning.
  *
  * <p>There is deliberately no {@code /blank entity} that spawns one. Nothing spawns it - it is there
  * whenever anybody is standing on the disc, and if it is not, that is a bug worth seeing rather than
@@ -50,9 +59,38 @@ public final class BlankCommand {
 						.requires(source -> source.hasPermissionLevel(2))
 						.then(CommandManager.literal("exit").executes(BlankCommand::openExit))
 						.then(CommandManager.literal("eye").executes(BlankCommand::eye))
+						.then(CommandManager.literal("watcher")
+								.executes(BlankCommand::watcher)
+								.then(CommandManager.literal("beam").executes(BlankCommand::beam)))
 						.then(CommandManager.literal("entity")
 								.then(CommandManager.literal("skip").executes(BlankCommand::skip))
-								.then(CommandManager.literal("kill").executes(BlankCommand::kill)))));
+								.then(CommandManager.literal("kill").executes(BlankCommand::kill))
+								.then(CommandManager.literal("reset").executes(BlankCommand::reset)))));
+	}
+
+	/**
+	 * Forgets that the thing was ever killed, so the disc puts one up again.
+	 *
+	 * <p>The only way back from a win, and the reason it is needed is that winning is permanent by
+	 * design - see {@link BlankVictory}. Without this the fight could be played through exactly once
+	 * per world, which is a fine rule for players and a useless one for whoever is building it.
+	 *
+	 * <p>What it does not do is take the way out back down. The portal in the middle is where the last
+	 * fight left it and the next one is happy to be had around it; {@code /blank exit} is how that
+	 * block got there and there is no reason for two commands to disagree about who owns it.
+	 */
+	private static int reset(CommandContext<ServerCommandSource> context) {
+		ServerCommandSource source = context.getSource();
+		BlankVictory victory = BlankVictory.get(source.getServer());
+
+		if (!victory.beaten()) {
+			source.sendFeedback(() -> Text.literal("It has not been killed. There is nothing to put back."), false);
+			return 0;
+		}
+
+		victory.forget();
+		source.sendFeedback(() -> Text.literal("The disc has forgotten. Stand on it and it will be there."), true);
+		return 1;
 	}
 
 	private static int skip(CommandContext<ServerCommandSource> context) {
@@ -141,6 +179,66 @@ public final class BlankCommand {
 
 		source.sendFeedback(() -> Text.literal("Something is looking at you from "
 				+ (int) player.getPos().distanceTo(eye.getPos()) + " blocks out."), false);
+		return 1;
+	}
+
+	/**
+	 * Stands one up on the ring, wherever the spawner would have put it.
+	 *
+	 * <p>Worth having for the same reason {@code /blank eye} is, and more so: the one that is always
+	 * out there is placed on a bearing rolled when the disc loaded, so the only way to see what two of
+	 * them look like from a particular spot is to ask for the second one.
+	 */
+	private static int watcher(CommandContext<ServerCommandSource> context) {
+		ServerCommandSource source = context.getSource();
+		ServerWorld blank = source.getServer().getWorld(ModDimensions.BLANK_WORLD);
+
+		if (blank == null) {
+			source.sendError(Text.literal("The disc is not loaded."));
+			return 0;
+		}
+
+		WatcherEntity watcher = WatcherSpawner.add(blank, 0);
+
+		if (watcher == null) {
+			source.sendError(Text.literal("Could not place one."));
+			return 0;
+		}
+
+		source.sendFeedback(() -> Text.literal("Something is standing "
+				+ (int) Math.sqrt(watcher.getX() * watcher.getX() + watcher.getZ() * watcher.getZ())
+				+ " blocks out. Look up."), false);
+		return 1;
+	}
+
+	/**
+	 * Fires one at whoever ran it.
+	 *
+	 * <p>Goes through the fight rather than round it - the beam is an {@code Ongoing} the Entity ticks
+	 * and cancels, so there has to be an Entity, and what this exercises is exactly the path the
+	 * survival phase takes. See {@code WatcherAttack#strike}.
+	 */
+	private static int beam(CommandContext<ServerCommandSource> context) {
+		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
+
+		if (player == null) {
+			source.sendError(Text.literal("This has to be run by a player - it is fired at somebody."));
+			return 0;
+		}
+
+		TheEntity entity = onTheDisc(source);
+
+		if (entity == null) {
+			return 0;
+		}
+
+		if (!WatcherAttack.strike(entity, player.getServerWorld(), player.getPos())) {
+			source.sendError(Text.literal("There is nothing out there to fire it."));
+			return 0;
+		}
+
+		source.sendFeedback(() -> Text.literal("It is winding up. Move."), false);
 		return 1;
 	}
 }

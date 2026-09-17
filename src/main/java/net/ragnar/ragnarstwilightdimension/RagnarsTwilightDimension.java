@@ -22,7 +22,7 @@ import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
 import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.WandererSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.BossBarWatch;
-import net.ragnar.ragnarstwilightdimension.entity.EyeSpawner;
+import net.ragnar.ragnarstwilightdimension.entity.WatcherSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.TheEntityFight;
 import net.ragnar.ragnarstwilightdimension.entity.WitnessSpawner;
 import net.ragnar.ragnarstwilightdimension.portal.TempleGate;
@@ -63,7 +63,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		SilhouetteSpawner.register();
 		WandererSpawner.register();
 		WitnessSpawner.register();
-		EyeSpawner.register();
+		WatcherSpawner.register();
 		TheEntityFight.register();
 		BossBarWatch.register();
 		TwilightAmbience.register();

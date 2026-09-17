@@ -1,5 +1,7 @@
 package net.ragnar.ragnarstwilightdimension.entity.attack;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -13,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.ragnar.ragnarstwilightdimension.entity.TheEntity;
+import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -31,6 +34,39 @@ import java.util.List;
  *
  * <p>The snow does not settle. Every block shatters on landing, because nine of these a phase for as
  * long as the fight lasts would otherwise bury the arena a metre deep and turn the disc into terrain.
+ *
+ * <h2>What being under it costs</h2>
+ *
+ * <p>Thirty metres of falling snow does not nudge somebody. A hit caught by the edge of the square
+ * throws hard; a hit in the middle of it - the three columns somebody would be standing in if they
+ * never read the mark at all - throws roughly three times as far as this attack used to, and upwards
+ * as well as outwards, so the rest of it is spent in the air with no say in where it ends.
+ *
+ * <p>That is dangerous near the rim of the disc on purpose, and it is not a trick: the mark is thirty
+ * ticks long and drawn as the exact nine blocks, and the middle of those nine is the one square in
+ * the arena where the floor is about to be somewhere else. Being thrown off the world for standing
+ * there is the same bargain {@code HoleAttack} makes, announced the same way and for as long.
+ *
+ * <h2>The crater</h2>
+ *
+ * <p>What lands takes the floor with it, all of it. The nine columns are cut out through the entire
+ * three blocks of the disc for five seconds and then put back exactly as they were, which leaves a
+ * three by three shaft with the void underneath it - the same hole {@code HoleAttack} opens, smaller
+ * and for a third as long.
+ *
+ * <p>So the square that was announced is not a place to be hit, it is a place the world stops. Being
+ * under a fall was always survivable and is still survivable; standing on the square for the five
+ * seconds afterwards is not, and neither is being thrown onto it by the next one. The mark is the
+ * exact nine blocks and it is up for thirty ticks before anything arrives, which is the same bargain
+ * every hole in this fight makes.
+ *
+ * <p>Straight through rather than one layer deep, and that is the whole difference: a pit you climb
+ * out of is scenery, and a shaft you fall through is the attack. Up to three of these land at once
+ * for the whole sixty-four seconds, so by the end of a phase the disc is a floor with holes in it
+ * that keep moving.
+ *
+ * <p>Three separate things put the floor back: the five second timer, the phase seam through
+ * {@link Snowfall#cancel}, and {@code TheEntityFight.repair} if the server stops while one is open.
  */
 public final class SnowfallAttack implements Attack {
 	private static final int GRACE = 30;
@@ -54,10 +90,24 @@ public final class SnowfallAttack implements Attack {
 
 	private static final double RADIUS = 2.2;
 	private static final float DAMAGE = 12.0F;
-	private static final double KNOCKBACK = 1.5;
+
+	/** How hard it throws anybody it only caught by the edge. */
+	private static final double KNOCKBACK = 1.9;
+
+	/** How close to the middle of the nine counts as having been underneath it. */
+	private static final double DIRECT_RADIUS = 1.3;
+
+	/** And what that costs. Far enough to cross most of the disc, from wherever it happened. */
+	private static final double DIRECT_KNOCKBACK = 3.2;
+
+	/** How far up a direct hit goes, which is what buys the throw its distance. */
+	private static final double LIFT = 0.7;
 
 	/** How far above the floor still counts. Jumping is not a dodge; leaving the square is. */
 	private static final double REACH_UP = 4.0;
+
+	/** How long the floor stays broken where one landed. */
+	private static final int CRATER_TICKS = 100;
 
 	/** The dimension's own colour, one shade colder, as everything drawn in this fight is. */
 	private static final DustParticleEffect MARK =
@@ -85,7 +135,7 @@ public final class SnowfallAttack implements Attack {
 		}
 	}
 
-	/** One square: the mark, the fall, and what was standing underneath. */
+	/** One square: the mark, the fall, what was standing underneath, and the shaft it leaves. */
 	private static final class Snowfall implements Ongoing {
 		/** The middle of the three by three, snapped to the grid the blocks will actually land on. */
 		private final BlockPos middle;
@@ -93,8 +143,14 @@ public final class SnowfallAttack implements Attack {
 
 		private final List<FallingBlockEntity> falling = new ArrayList<>();
 
+		/** Exactly what the impact took out of the floor, so what goes back is what was there. */
+		private final List<BlockPos> taken = new ArrayList<>();
+		private final List<BlockState> was = new ArrayList<>();
+
 		private int ticks;
-		private boolean landed;
+
+		/** The tick it landed on, or zero while it is still coming down. */
+		private int struck;
 
 		private Snowfall(Vec3d at) {
 			this.middle = BlockPos.ofFloored(at.x, Attacks.GROUND_Y, at.z);
@@ -118,21 +174,29 @@ public final class SnowfallAttack implements Attack {
 				return false;
 			}
 
-			if (this.landed || this.ticks > MAX_TICKS) {
+			if (this.struck == 0) {
+				// Watched rather than timed. Working out when a falling block lands is a matter of gravity,
+				// drag and terminal velocity, and every one of those is vanilla to change - asking the
+				// block where it is cannot go out of date.
+				for (FallingBlockEntity block : this.falling) {
+					if (block.isRemoved() || block.isOnGround()) {
+						land(boss, world);
+						this.struck = this.ticks;
+						return false;
+					}
+				}
+
+				// Nothing landed and nothing is going to. Nothing came out of the floor either, so there
+				// is nothing left here to put back.
+				return this.ticks > MAX_TICKS;
+			}
+
+			if (this.ticks - this.struck >= CRATER_TICKS) {
+				fill(world);
 				return true;
 			}
 
-			// Watched rather than timed. Working out when a falling block lands is a matter of gravity,
-			// drag and terminal velocity, and every one of those is vanilla's to change - asking the
-			// block where it is cannot go out of date.
-			for (FallingBlockEntity block : this.falling) {
-				if (block.isRemoved() || block.isOnGround()) {
-					land(boss, world);
-					this.landed = true;
-					return true;
-				}
-			}
-
+			rim(world);
 			return false;
 		}
 
@@ -178,7 +242,10 @@ public final class SnowfallAttack implements Attack {
 		}
 
 		private void land(TheEntity boss, ServerWorld world) {
-			Attacks.burst(boss, world, this.centre, RADIUS, DAMAGE, KNOCKBACK, REACH_UP);
+			Attacks.burst(boss, world, this.centre, RADIUS, DAMAGE, KNOCKBACK, REACH_UP,
+					DIRECT_RADIUS, DIRECT_KNOCKBACK, LIFT);
+
+			dig(world);
 
 			world.spawnParticles(
 					new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SNOW_BLOCK.getDefaultState()),
@@ -190,6 +257,68 @@ public final class SnowfallAttack implements Attack {
 					SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.4F, 1.5F);
 		}
 
+		/**
+		 * The nine columns, all three layers of them, taken out and written down.
+		 *
+		 * <p>Air is skipped rather than recorded, which is what makes two of these landing on the same
+		 * square safe: the second one finds the first shaft already open, takes nothing, and puts nothing
+		 * back when its own five seconds are up. The floor belongs to whoever actually lifted it.
+		 *
+		 * <p>{@code TheEntityFight.repair} is the backstop for all of it. A server stopped inside those
+		 * five seconds, or a chunk unloaded out from under one, otherwise saves the disc with a hole in
+		 * it that nothing will ever fill - the chunk has already been generated.
+		 */
+		private void dig(ServerWorld world) {
+			int bottom = TheBlank.FLOOR_Y - TheBlank.THICKNESS + 1;
+
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					for (int y = bottom; y <= TheBlank.FLOOR_Y; y++) {
+						BlockPos at = new BlockPos(this.middle.getX() + dx, y, this.middle.getZ() + dz);
+						BlockState state = world.getBlockState(at);
+
+						if (state.isAir()) {
+							continue;
+						}
+
+						this.taken.add(at);
+						this.was.add(state);
+						world.setBlockState(at, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+					}
+				}
+			}
+
+			world.playSound(null, this.centre.x, this.centre.y, this.centre.z,
+					SoundEvents.BLOCK_SNOW_BREAK, SoundCategory.HOSTILE, 2.5F, 0.5F);
+		}
+
+		/** Loose snow off the lip of it while it is open, so a shaft reads as a shaft in the dark. */
+		private void rim(ServerWorld world) {
+			if (this.taken.isEmpty() || (this.ticks - this.struck) % 10 != 0) {
+				return;
+			}
+
+			world.spawnParticles(MARK,
+					this.centre.x, Attacks.GROUND_Y - 0.4, this.centre.z, 6, 1.4, 0.05, 1.4, 0.0);
+		}
+
+		/** Exactly what was there, exactly where it was. */
+		private void fill(ServerWorld world) {
+			for (int i = 0; i < this.taken.size(); i++) {
+				world.setBlockState(this.taken.get(i), this.was.get(i), Block.NOTIFY_LISTENERS);
+			}
+
+			if (!this.taken.isEmpty()) {
+				world.spawnParticles(ParticleTypes.SNOWFLAKE,
+						this.centre.x, Attacks.GROUND_Y + 0.2, this.centre.z, 25, 1.4, 0.2, 1.4, 0.03);
+				world.playSound(null, this.centre.x, this.centre.y, this.centre.z,
+						SoundEvents.BLOCK_SNOW_PLACE, SoundCategory.HOSTILE, 1.6F, 0.7F);
+			}
+
+			this.taken.clear();
+			this.was.clear();
+		}
+
 		@Override
 		public void cancel(ServerWorld world) {
 			for (FallingBlockEntity block : this.falling) {
@@ -197,6 +326,8 @@ public final class SnowfallAttack implements Attack {
 					block.discard();
 				}
 			}
+
+			fill(world);
 		}
 	}
 }

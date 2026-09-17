@@ -1,0 +1,672 @@
+{
+  "enabled": true,
+  "neededInstalledMods": [
+    "cobblemon"
+  ],
+  "neededUninstalledMods": [],
+  "spawns": [
+    {
+      "id": "haunter-twilight-1",
+      "pokemon": "haunter",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-46",
+      "weight": 7.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "dusclops-twilight-1",
+      "pokemon": "dusclops",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-48",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "lampent-twilight-1",
+      "pokemon": "lampent",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-46",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "golett-twilight-1",
+      "pokemon": "golett",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-38",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "honedge-twilight-1",
+      "pokemon": "honedge",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-38",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "doublade-twilight-1",
+      "pokemon": "doublade",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "32-48",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "pumpkaboo-twilight-1",
+      "pokemon": "pumpkaboo",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "18-36",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "gourgeist-twilight-1",
+      "pokemon": "gourgeist",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "34-50",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "drakloak-twilight-1",
+      "pokemon": "drakloak",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "38-52",
+      "weight": 4.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "misdreavus-twilight-1",
+      "pokemon": "misdreavus",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "18-36",
+      "weight": 7.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "sableye-twilight-1",
+      "pokemon": "sableye",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-38",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "mawile-twilight-1",
+      "pokemon": "mawile",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-38",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "klefki-twilight-1",
+      "pokemon": "klefki",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "22-40",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "banette-twilight-1",
+      "pokemon": "banette",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-46",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "drifblim-twilight-1",
+      "pokemon": "drifblim",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-46",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "trevenant-twilight-1",
+      "pokemon": "trevenant",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "34-50",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "houndstone-twilight-1",
+      "pokemon": "houndstone",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-46",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "dhelmise-twilight-1",
+      "pokemon": "dhelmise",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "32-48",
+      "weight": 4.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "xatu-twilight-1",
+      "pokemon": "xatu",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-44",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "loudred-twilight-1",
+      "pokemon": "loudred",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-40",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "claydol-twilight-1",
+      "pokemon": "claydol",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "34-50",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "chimecho-twilight-1",
+      "pokemon": "chimecho",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-42",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "beldum-twilight-1",
+      "pokemon": "beldum",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "22-40",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "metang-twilight-1",
+      "pokemon": "metang",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "32-48",
+      "weight": 4.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "kadabra-twilight-1",
+      "pokemon": "kadabra",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "26-42",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "marowak-twilight-1",
+      "pokemon": "marowak",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-44",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "corvisquire-twilight-1",
+      "pokemon": "corvisquire",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-36",
+      "weight": 6.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "morgrem-twilight-1",
+      "pokemon": "morgrem",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-42",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "duosion-twilight-1",
+      "pokemon": "duosion",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "26-42",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "beheeyem-twilight-1",
+      "pokemon": "beheeyem",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "32-48",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "musharna-twilight-1",
+      "pokemon": "musharna",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-46",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "zorua-twilight-1",
+      "pokemon": "zorua",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "18-36",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "sudowoodo-twilight-1",
+      "pokemon": "sudowoodo",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "22-40",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "cherrim-twilight-1",
+      "pokemon": "cherrim",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-40",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "porygon-twilight-1",
+      "pokemon": "porygon",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-42",
+      "weight": 4.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "lunatone-twilight-1",
+      "pokemon": "lunatone",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-42",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "solrock-twilight-1",
+      "pokemon": "solrock",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "24-42",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "breloom-twilight-1",
+      "pokemon": "breloom",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "26-42",
+      "weight": 5.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "munchlax-twilight-1",
+      "pokemon": "munchlax",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "18-34",
+      "weight": 5.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    }
+  ]
+}

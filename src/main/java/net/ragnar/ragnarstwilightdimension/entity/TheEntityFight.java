@@ -16,10 +16,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimension;
 import net.ragnar.ragnarstwilightdimension.network.TheEntityPayload;
+import net.ragnar.ragnarstwilightdimension.portal.TempleGate;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Whether there is a fight on the disc, and everything about it that has to outlive the thing doing
@@ -51,14 +56,27 @@ import java.util.List;
  *
  * <h2>The two rules</h2>
  *
- * <p>Somebody on the disc and no Entity: put one over the middle, at full health, at the top of its
- * intro. Nobody on the disc: end the fight and take it away. Every reset in the design falls out of
- * the second rule, which is why there is no code anywhere that handles a wipe - the disc is a sealed
- * room with one way in, so "everybody died" and "there is nobody on the disc" are the same event.
+ * <p>Somebody alive on the disc and no Entity: put one over the middle, at full health, at the top of
+ * its intro. Nobody alive on the disc: end the fight and take it away. The disc is a sealed room with
+ * one way in, so "everybody died" and "there is nobody on the disc" are the same event - which is why
+ * a wipe is not a case anything here has to detect. It is just the circle being empty.
  *
- * <p>It also means the fight can be had again. The disc keeps whatever was opened on it last time, so
- * a party that has already won and comes back finds the way out still standing in the middle of the
- * circle - and a new Entity over the top of it.
+ * <p>Alive is part of the rule rather than a detail of it. A player lying dead on the disc is not
+ * having the fight, and waiting for them to become another world's problem before the clock starts
+ * would spend the first seconds of every reset watching a corpse.
+ *
+ * <p>The one thing the second rule does not cover by itself is how fast somebody can come back. The
+ * Entity is gone within five seconds of the circle emptying and gone for good if the arena unloads,
+ * but a party with a bed at the temple can be back inside four - so {@link #emptied} remembers that
+ * the circle was empty at all, and the first person through the door after that gets a fight from the
+ * top whether or not the last one had finished being taken away.
+ *
+ * <h2>The one thing that is kept</h2>
+ *
+ * <p>Winning. That is in {@link BlankVictory}, on disk, and it is the only fact about this fight that
+ * survives the circle going empty: once the thing has been killed, nothing is ever put out there
+ * again by itself, and the disc stays what the kill left it as - an empty room with the way out
+ * standing open in the middle of it.
  */
 public final class TheEntityFight {
 	/**
@@ -79,10 +97,26 @@ public final class TheEntityFight {
 	 * <p>It is <b>not</b> a grace period for the death screen, because there is no death screen. Dying
 	 * in here is an immediate respawn - see {@code TwilightRespawn} - so a player who dies is out of
 	 * the world within a tick or two rather than lying there deciding. That is exactly why the ending
-	 * cannot be left to the Entity's own ticking, and why {@link #end} sends the bar back to every
-	 * player on the server rather than to the ones it can still see.
+	 * cannot be left to the Entity's own ticking, and why the bar is taken back by {@link #prune}
+	 * every tick rather than by the fight remembering to hand it in.
 	 */
 	private static final int EMPTY_GRACE_TICKS = 100;
+
+	/**
+	 * How long the disc has to have been empty for the fight on it to count as lost, in ticks.
+	 *
+	 * <p>A second, and it is deliberately much shorter than the grace above, because the two are
+	 * answering different questions. That one is "is this over", and being wrong about it takes a boss
+	 * bar off somebody mid-fight. This one is "was it lost", and being wrong about it is impossible in
+	 * the direction that matters: there is exactly one way onto the disc and it has a portal cooldown
+	 * on it, so nobody alive has ever been off it for a second and come back.
+	 *
+	 * <p>Without this the reset would be worth whatever the grace happens to be. A party that wipes
+	 * with a bed at the temple can be back through the portal in four seconds, and what they would walk
+	 * into is the same Entity on the same clock at the same health - the fight they just lost, waiting
+	 * for them, which is the one thing it is not supposed to be.
+	 */
+	private static final int WIPE_TICKS = 20;
 
 	/** How often the disc is looked at. There is no hurry about any of this. */
 	private static final int CHECK_INTERVAL_TICKS = 20;
@@ -96,25 +130,33 @@ public final class TheEntityFight {
 	private static boolean ended;
 
 	/**
-	 * Whether the last one on this disc was killed rather than merely taken away.
+	 * Whether everybody has been off the disc since the last time anybody was on it.
 	 *
-	 * <p>Without this the reward for winning would be another fight starting over the bodies: the
-	 * Entity discards itself, the disc still has people on it, and twenty ticks later the first rule
-	 * puts a fresh one in the sky. So a kill is remembered until the circle has been empty for its
-	 * grace period - long enough for the winners to walk through the door they opened, and gone by the
-	 * time anybody could come back through it.
-	 *
-	 * <p>Not written to disk, deliberately. It only has to outlive the walk to the portal, and a server
-	 * restarted between the kill and that walk has bigger discontinuities than this one.
+	 * <p>This is the wipe, and it is a flag rather than a moment because the moment is not observable:
+	 * the last player to die is gone within a tick or two and nothing on the disc is told about it.
+	 * What can be observed is the circle being empty, and the next person to walk in finding this set
+	 * is the next person to walk in on a fight that nobody survived.
 	 */
-	private static boolean beaten;
+	private static boolean emptied;
+
+	/**
+	 * Everybody currently holding the bar: who they are, and the object they were when they got it.
+	 *
+	 * <p>Both halves are load-bearing, and the pair is the whole of why a bar can no longer be left in
+	 * another world. {@code ServerBossBar} holds {@code ServerPlayerEntity} objects, and a player who
+	 * dies and respawns is a <i>new object</i> - so asking the bar to remove the live player finds
+	 * nothing to remove and sends them nothing, while the one it is still holding is a corpse nobody
+	 * is looking through any more. The uuid is what survives that; the object is what the bar itself
+	 * has to be handed back.
+	 */
+	private static final Map<UUID, ServerPlayerEntity> SHOWING = new HashMap<>();
 
 	private TheEntityFight() {
 	}
 
-	/** Called by {@link TheEntity} as it finishes going up. See {@link #beaten}. */
-	public static void beaten() {
-		beaten = true;
+	/** It has been killed, for good. See {@link BlankVictory}. */
+	public static void won(ServerWorld blank) {
+		BlankVictory.get(blank.getServer()).win();
 	}
 
 	public static void register() {
@@ -126,16 +168,25 @@ public final class TheEntityFight {
 			return;
 		}
 
+		// Every tick, ahead of everything else. Whoever this takes the bar from has already stopped
+		// being in the fight - by dying, by walking out, by logging off - and every one of those is
+		// somebody who is somewhere else by the time they see their screen again.
+		prune(world);
+
 		boolean anybody = false;
 
 		for (ServerPlayerEntity player : world.getPlayers()) {
-			if (!player.isSpectator()) {
+			if (!player.isSpectator() && player.isAlive()) {
 				anybody = true;
 				break;
 			}
 		}
 
 		emptyTicks = anybody ? 0 : emptyTicks + 1;
+
+		if (emptyTicks >= WIPE_TICKS) {
+			emptied = true;
+		}
 
 		if (world.getServer().getTicks() % CHECK_INTERVAL_TICKS != 0) {
 			return;
@@ -147,9 +198,32 @@ public final class TheEntityFight {
 		if (anybody) {
 			ended = false;
 
-			if (here.isEmpty() && !beaten) {
-				spawn(world);
+			// Already won: walking back in is walking into an empty circle, and nothing is put up.
+			// Anything somehow still standing out there is a leftover rather than a fight - it goes, and
+			// the bar and the music go with it.
+			if (BlankVictory.get(world.getServer()).beaten()) {
+				if (!here.isEmpty()) {
+					for (TheEntity entity : here) {
+						entity.discard();
+					}
+
+					end(world.getServer());
+				}
+
+				return;
 			}
+
+			if (here.isEmpty()) {
+				spawn(world);
+			} else if (emptied) {
+				// Somebody walking in on a fight that everybody died in. Starting it over is the same
+				// three lines as putting a new one up - full health, the top of the intro, a swept arena -
+				// because it is the same thing: what makes a reset is the circle having been empty, not
+				// whether the chunk happened to unload before anybody came back.
+				here.get(0).begin();
+			}
+
+			emptied = false;
 
 			// More than one is a bug somewhere upstream rather than a thing to design around, but two
 			// boss bars and two soundtracks is a bad way to find out about it. The oldest keeps the fight.
@@ -162,11 +236,20 @@ public final class TheEntityFight {
 
 		if (emptyTicks >= EMPTY_GRACE_TICKS && !ended) {
 			ended = true;
-			beaten = false;
 
 			// Best effort. If the arena has already unloaded there is nothing in this list, and there does
 			// not need to be - an Entity is never written to the chunk, so one that unloaded is gone.
 			for (TheEntity entity : here) {
+				// Except for one that was already going up. A kill nobody was left to watch land is still
+				// a kill - it only gets into that phase one way, by being beaten - and the ten seconds it
+				// had left were a curtain call rather than part of the fight. Somebody who won and then
+				// fell off the edge of the disc watching it rise has still won, so the last two things the
+				// rise would have done are done here instead of being thrown away with it.
+				if (entity.getPhase() == TheEntity.Phase.DYING) {
+					TempleGate.openExit(world);
+					won(world);
+				}
+
 				entity.discard();
 			}
 
@@ -174,22 +257,126 @@ public final class TheEntityFight {
 		}
 	}
 
+	// --- the bar --------------------------------------------------------------
+
+	/**
+	 * Who is looking at the bar this tick, settled from scratch every tick.
+	 *
+	 * <p>Called by {@link TheEntity} while it is fighting, and whether there is a fight at all is the
+	 * only thing it gets a say in. <i>Where</i> the bar is allowed to be is decided here and nowhere
+	 * else: on the disc, alive, not spectating. There is no distance test - the disc is one circle
+	 * seventy across with nothing else in it, so being on it is the test - and there is no way onto
+	 * the list from any other world, which is the point of it being one list in one place.
+	 */
+	static void showBar(ServerWorld blank, boolean fighting) {
+		if (!fighting) {
+			BAR.setVisible(false);
+			clear(blank.getServer());
+			return;
+		}
+
+		BAR.setVisible(true);
+
+		for (ServerPlayerEntity player : blank.getPlayers()) {
+			if (!watching(player, blank)) {
+				continue;
+			}
+
+			ServerPlayerEntity had = SHOWING.put(player.getUuid(), player);
+
+			if (had == player) {
+				continue;
+			}
+
+			// A different object under the same uuid is somebody who died and came back. The bar is
+			// holding the corpse; hand it to the person.
+			if (had != null) {
+				BAR.removePlayer(had);
+			}
+
+			BAR.addPlayer(player);
+		}
+	}
+
+	/** Whether this player is somebody the fight is currently happening to. */
+	private static boolean watching(ServerPlayerEntity player, ServerWorld blank) {
+		return player.getServerWorld() == blank && player.isAlive() && !player.isSpectator();
+	}
+
+	/**
+	 * Takes the bar back from anybody who has stopped being in the fight.
+	 *
+	 * <p>Run every tick from the world tick rather than from the boss, because the case it exists for
+	 * is the boss no longer ticking: the last player dies, the arena unloads within a second, and
+	 * every line of code that would have handed the bar in is in a method nothing will call again.
+	 * This one keeps running.
+	 */
+	private static void prune(ServerWorld blank) {
+		if (SHOWING.isEmpty()) {
+			return;
+		}
+
+		MinecraftServer server = blank.getServer();
+		Iterator<Map.Entry<UUID, ServerPlayerEntity>> showing = SHOWING.entrySet().iterator();
+
+		while (showing.hasNext()) {
+			Map.Entry<UUID, ServerPlayerEntity> entry = showing.next();
+			ServerPlayerEntity live = server.getPlayerManager().getPlayer(entry.getKey());
+
+			if (live != null && live == entry.getValue() && watching(live, blank)) {
+				continue;
+			}
+
+			take(entry.getValue(), live);
+			showing.remove();
+		}
+	}
+
+	/** Hands the bar in for everybody holding one. */
+	private static void clear(MinecraftServer server) {
+		if (SHOWING.isEmpty()) {
+			return;
+		}
+
+		for (Map.Entry<UUID, ServerPlayerEntity> entry : SHOWING.entrySet()) {
+			take(entry.getValue(), server.getPlayerManager().getPlayer(entry.getKey()));
+		}
+
+		SHOWING.clear();
+	}
+
+	/**
+	 * Off one player's screen, whichever of the two objects they currently are.
+	 *
+	 * <p>{@code removePlayer} on the object the bar is holding is what empties the bar's own set, and
+	 * the flat packet to whoever is actually playing is what reaches the screen. Nearly always they
+	 * are the same player and one of the two is redundant; on the tick somebody respawns they are not,
+	 * and a second removal is a packet the client throws away.
+	 */
+	private static void take(ServerPlayerEntity had, ServerPlayerEntity live) {
+		BAR.removePlayer(had);
+
+		if (live != null) {
+			live.networkHandler.sendPacket(BossBarS2CPacket.remove(BAR.getUuid()));
+		}
+	}
+
 	/**
 	 * The fight is over, for everybody, however it ended.
 	 *
-	 * <p>Called from exactly two places: the disc going empty, above, and the moment the Entity
-	 * finishes going up. Both are idempotent and neither depends on the Entity still existing, which
-	 * is the entire point of this method being here rather than on it.
+	 * <p>Called from three places: the disc going empty, above, the moment the Entity finishes going
+	 * up, and somebody walking back into a circle that has already been won. All three are idempotent
+	 * and none of them depends on the Entity still existing, which is the entire point of this method
+	 * being here rather than on it.
 	 *
-	 * <p>The bar is taken back with a packet sent flatly to everybody online rather than by removing
-	 * them from it, and that is not belt and braces - it is the fix. {@code ServerBossBar#removePlayer}
-	 * only sends anything <i>if the player was in its set</i>, and the set holds
-	 * {@code ServerPlayerEntity} objects: a player who has died and respawned is a brand new object,
-	 * and the one the bar is holding is a corpse nobody is looking through any more. Removing the live
-	 * player finds nothing to remove and tells them nothing, which is precisely how somebody ends up
-	 * standing in the overworld under a boss bar for a fight two dimensions away.
+	 * <p>The bar is taken back with a packet sent flatly to everybody online as well as from the
+	 * people known to be holding it, and that is not belt and braces - it is the one of the three that
+	 * covers a bar left on somebody this class is no longer tracking at all.
 	 */
 	public static void end(MinecraftServer server) {
+		BAR.setVisible(false);
+		clear(server);
+
 		for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
 			player.networkHandler.sendPacket(BossBarS2CPacket.remove(BAR.getUuid()));
 			ServerPlayNetworking.send(player, TheEntityPayload.off());
@@ -197,7 +384,6 @@ public final class TheEntityFight {
 
 		// Server-side state back to nothing, including whatever stale objects were still in the set.
 		BAR.clearPlayers();
-		BAR.setVisible(false);
 
 		ServerWorld blank = server.getWorld(ModDimensions.BLANK_WORLD);
 

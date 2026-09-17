@@ -1,35 +1,29 @@
 package net.ragnar.ragnarstwilightdimension.entity;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.ragnar.ragnarstwilightdimension.event.TwilightSchedule;
-import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 /**
- * Puts an eye out in the dark now and then, for whoever is standing on the disc.
+ * Where an eye goes when something asks for one.
  *
- * <h2>Why the distance is measured from the player and not from the middle</h2>
+ * <p>This used to roll for them as well - one chance in twelve every ten seconds, for whoever was
+ * standing on the disc. That is gone: the eyes out in the dark are watchers now, there is always one
+ * of them up, and the rolling lives in {@link WatcherSpawner}. What is left here is the placement, and
+ * it is left because two things still want an eye of their own. {@code EyeAttack} puts a small one at
+ * eleven blocks to shoot somebody with, and {@code /blank eye} puts a full-sized one on the ring, which
+ * is the only way left to look at the picture on its own.
+ *
+ * <h2>Why the ring is measured from the player</h2>
  *
  * <p>An eye has to be inside the chunks the player's client has actually loaded or the server never
  * tells them it exists - and that limit is a radius around the <em>player</em>, not around the disc.
- * Placing these on a fixed ring around the origin would put them a comfortable distance away for
- * somebody standing in the middle and past the edge of the world for somebody standing on the far
- * rim, who would see nothing at all and never know why.
- *
- * <p>So the ring travels with whoever it is for. {@link #MAX_DISTANCE} is what keeps it honest: it
- * has to stay inside the smallest render distance worth supporting, or the effect quietly stops
- * existing for anybody who plays at eight chunks.
+ * A fixed ring around the origin would be a comfortable distance for somebody standing in the middle
+ * and past the edge of the world for somebody on the far rim, who would see nothing and never know
+ * why. The watchers can be placed round the disc instead because they are a hundred blocks tall and
+ * stand much closer in; thirty blocks of picture at eighty out cannot afford it.
  */
 public final class EyeSpawner {
-	/** How often the roll happens, per player. 200 ticks = 10 seconds. */
-	private static final int CHECK_INTERVAL_TICKS = 200;
-
-	/** Chance per roll. 0.08 at a 10s interval averages out to one about every two minutes. */
-	private static final float SPAWN_CHANCE = 0.08F;
-
 	/**
 	 * The ring it appears on, in blocks from the player.
 	 *
@@ -51,50 +45,14 @@ public final class EyeSpawner {
 	private static final double MIN_RISE = 8.0;
 	private static final double MAX_RISE = 28.0;
 
-	/** More than this many already up near a player and the roll is skipped. */
-	private static final int MOST_AT_ONCE = 2;
-
-	/** What counts as "near a player" for that count. Comfortably past the spawn ring. */
-	private static final double CROWDING_RADIUS = 160.0;
-
 	private EyeSpawner() {
-	}
-
-	public static void register() {
-		ServerTickEvents.END_WORLD_TICK.register(EyeSpawner::onWorldTick);
-	}
-
-	private static void onWorldTick(ServerWorld world) {
-		if (!ModDimensions.BLANK_WORLD.equals(world.getRegistryKey())) {
-			return;
-		}
-
-		int now = world.getServer().getTicks();
-		if (!TwilightSchedule.rolls(now, CHECK_INTERVAL_TICKS, TwilightSchedule.EYE)) {
-			return;
-		}
-
-		for (ServerPlayerEntity player : world.getPlayers()) {
-			if (world.getRandom().nextFloat() < SPAWN_CHANCE) {
-				trySpawnNear(world, player);
-			}
-		}
-	}
-
-	private static void trySpawnNear(ServerWorld world, ServerPlayerEntity player) {
-		Box crowding = player.getBoundingBox().expand(CROWDING_RADIUS);
-		if (world.getEntitiesByClass(EyeEntity.class, crowding, e -> true).size() >= MOST_AT_ONCE) {
-			return;
-		}
-
-		spawnFor(world, player);
 	}
 
 	/**
 	 * Puts one on the ring around this player, at a bearing picked at random.
 	 *
-	 * <p>The roll and the crowding check are the caller's business and are deliberately not in here,
-	 * so that {@code /blank eye} gets an eye every time it is asked rather than one time in twelve.
+	 * <p>Nothing is checked and nothing is rolled: everything that calls this has already decided it
+	 * wants an eye, and gets one.
 	 */
 	public static EyeEntity spawnFor(ServerWorld world, ServerPlayerEntity player) {
 		float angle = world.getRandom().nextFloat() * MathHelper.TAU;

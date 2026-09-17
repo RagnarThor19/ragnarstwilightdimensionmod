@@ -74,8 +74,12 @@ public final class TwilightSchedule {
 	 * <p>83 clears the every-100 ambience roll, is none of the five 200-tick phases, is not the blood
 	 * moon's 366 on its 600-tick cycle, and is not the bell's 150 - which is every check there is on
 	 * this clock.
+	 *
+	 * <p>This was the eyes' slot and is now the watchers', who took over from them. Only the
+	 * <em>extra</em> ones are rolled for: the one that is always up is a floor rather than a chance,
+	 * and is not on this clock at all. See {@code WatcherSpawner}.
 	 */
-	public static final int EYE = 83;
+	public static final int WATCHER = 83;
 
 	/**
 	 * Every 24000 ticks - a day, and by a long way the slowest thing on this clock.

@@ -52,7 +52,8 @@ public class BlankReturns extends PersistentState {
 	 */
 	public static BlankReturns get(MinecraftServer server) {
 		ServerWorld twilight = server.getWorld(ModDimensions.TWILIGHT_WORLD);
-		ServerWorld host = twilight != null ? twilight : server.getOverworld();
+		ServerWorld
+                host = twilight != null ? twilight : server.getOverworld();
 		return host.getPersistentStateManager().getOrCreate(TYPE, KEY);
 	}
 

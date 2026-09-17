@@ -24,6 +24,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.ragnar.ragnarstwilightdimension.portal.BlankReturns;
+import net.ragnar.ragnarstwilightdimension.portal.TempleRing;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
 
@@ -45,6 +46,9 @@ import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
  * has to land the player back at their own temple rather than at some default. The disc is one
  * fixed circle shared by everybody, so without that the second player through would come back out
  * of the first player's building.
+ *
+ * <p>Back at it, not back <i>in</i> it: the way out puts people down outside on the ground, and
+ * {@link TempleRing#outside} says at length why arriving on the block you left from is a trap.
  */
 public class TemplePortalBlock extends BlockWithEntity implements Portal {
 	public static final MapCodec<TemplePortalBlock> CODEC = createCodec(TemplePortalBlock::new);
@@ -102,19 +106,27 @@ public class TemplePortalBlock extends BlockWithEntity implements Portal {
 		float yaw;
 
 		if (leaving) {
-			// Straight back onto the portal block they left from, which lands them standing in the pool.
-			// That does not bounce them straight out again: an entity that arrives in a portal is on a
-			// portal cooldown, and Entity.tryUsePortal tops that cooldown back up every tick it is still
-			// standing in one rather than counting it down. The trip only fires again once they have
-			// stepped out and back in, which is how a nether portal behaves and what people expect.
-			//
 			// Back to the ring they lit. Nobody has a remembered temple the first time they are seen on
 			// the disc - a fresh world, an operator who teleported in - so the dimension's own spawn is
 			// the fallback rather than a refusal to let them out.
 			BlockPos temple = BlankReturns.get(world.getServer()).returnPoint(entity.getUuid());
-			BlockPos target = temple != null ? temple : destination.getSpawnPos();
-			landing = target.toBottomCenterPos();
-			yaw = entity.getYaw();
+
+			// Outside the building rather than back into the pool, because the pool is in the ceiling of
+			// a sealed room - see TempleRing.outside, which is where the whole of that is written down.
+			// The remembered block is the fallback for a temple that has been dug up or built into a
+			// cliff: standing in the portal does not bounce anybody straight back through it, since an
+			// entity that arrives in one is on a cooldown that Entity.tryUsePortal tops back up every
+			// tick they are still standing there. It is somewhere to be, and it is not a good one.
+			TempleRing.Outside spot = temple != null ? TempleRing.outside(destination, temple) : null;
+
+			if (spot != null) {
+				landing = spot.pos();
+				yaw = spot.yaw();
+			} else {
+				BlockPos target = temple != null ? temple : destination.getSpawnPos();
+				landing = target.toBottomCenterPos();
+				yaw = entity.getYaw();
+			}
 		} else {
 			BlankReturns.get(world.getServer()).remember(entity.getUuid(), pos);
 			landing = TheBlank.ARRIVAL;

@@ -148,6 +148,29 @@ public final class ModEntities {
 					.build("eye"));
 
 	/**
+	 * The one in the dark, a hundred blocks of it. Not a mob and not alive - a silhouette with an eye
+	 * for a face, see {@link WatcherEntity}.
+	 *
+	 * <p>The dimensions are the shape's own, so the box it is culled against is the thing you can see.
+	 * That matters more here than anywhere else in the mod: an entity is dropped from drawing past
+	 * {@code 64 x} the average side of its box, and a watcher with a player-sized box would vanish at
+	 * about seventy blocks - which is roughly where it starts being worth looking at.
+	 *
+	 * <p>The tracking range is asked for large and then clamped down by the server's view distance,
+	 * which is the real limit; {@link WatcherSpawner} is where the ring is actually held inside what a
+	 * client will load. No summon, like the other set pieces - use {@code /blank watcher}.
+	 */
+	public static final EntityType<WatcherEntity> WATCHER = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "watcher"),
+			EntityType.Builder.create(WatcherEntity::new, SpawnGroup.MISC)
+					.dimensions(WatcherEntity.WIDTH, WatcherEntity.HEIGHT)
+					.maxTrackingRange(16)
+					.makeFireImmune()
+					.disableSummon()
+					.build("watcher"));
+
+	/**
 	 * The Entity. No spawn egg and no {@code /summon}, like the other set pieces - it is placed by
 	 * {@link TheEntityFight} whenever somebody is standing on the disc, and one summoned anywhere
 	 * else would be a boss bar and a soundtrack in the middle of a field.

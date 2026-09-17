@@ -1,0 +1,111 @@
+{
+  "enabled": true,
+  "neededInstalledMods": [
+    "cobblemon"
+  ],
+  "neededUninstalledMods": [],
+  "spawns": [
+    {
+      "id": "shedinja-twilight-1",
+      "pokemon": "shedinja",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "28-46",
+      "weight": 0.8,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "rotom-twilight-1",
+      "pokemon": "rotom",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "30-48",
+      "weight": 0.8,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "porygonz-twilight-1",
+      "pokemon": "porygonz",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "50-62",
+      "weight": 0.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "fluttermane-twilight-1",
+      "pokemon": "fluttermane",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "55-65",
+      "weight": 0.3,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "darkrai-twilight-1",
+      "pokemon": "darkrai",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "60-70",
+      "weight": 0.2,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "cresselia-twilight-1",
+      "pokemon": "cresselia",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "ultra-rare",
+      "level": "60-70",
+      "weight": 0.2,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    }
+  ]
+}

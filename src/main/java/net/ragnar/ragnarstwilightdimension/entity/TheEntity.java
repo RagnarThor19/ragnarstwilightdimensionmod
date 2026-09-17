@@ -81,7 +81,11 @@ import java.util.UUID;
  * <p>It is never kept between fights, and never even written to disk - see {@link #shouldSave}. The
  * fight puts one on the disc when somebody is standing on it and takes it away when nobody is, which
  * is where "if they all die it resets" comes from: dying empties the disc, and an empty disc has no
- * Entity on it.
+ * Entity on it. Somebody who comes back quickly enough to find one still standing gets {@link #begin}
+ * called on it instead, which is the same reset done to the same object.
+ *
+ * <p>Killing it, on the other hand, is permanent, and it is the only thing about this fight that is -
+ * see {@code BlankVictory}. There is no second one.
  */
 public class TheEntity extends MobEntity {
 	/** The same shape as the blank figure, because it is the blank figure. */
@@ -157,13 +161,13 @@ public class TheEntity extends MobEntity {
 	private static final double REACH = 80.0;
 
 	/** How close it has to be to swing. A little past a player's own reach, and no more. */
-	private static final double PUNCH_RANGE = 3.2;
+	private static final double PUNCH_RANGE = 3.0;
 
 	/** Ticks between swings. */
-	private static final int PUNCH_COOLDOWN = 14;
+	private static final int PUNCH_COOLDOWN = 18;
 
 	/** How hard it hits, and what the landing of a swoop does to whoever was underneath. */
-	private static final double BASE_DAMAGE = 9.0;
+	private static final double BASE_DAMAGE = 11.0;
 	private static final float LANDING_DAMAGE = 7.0F;
 	private static final double LANDING_RADIUS = 4.0;
 	private static final double LANDING_KNOCKBACK = 1.4;
@@ -318,6 +322,15 @@ public class TheEntity extends MobEntity {
 	/** Where a swoop is headed, fixed when it starts so it flies past rather than following them down. */
 	private Vec3d swoopTo = Vec3d.ZERO;
 
+	/**
+	 * The spot on the floor it was killed over, which is where everything it was worth comes out.
+	 *
+	 * <p>Fixed at the first tick of the rise and not touched again - see {@link #beginDeath}. The
+	 * middle of the disc is only the default because a fight that has not started yet has not been
+	 * killed anywhere.
+	 */
+	private Vec3d diedAt = new Vec3d(CENTRE_X, GROUND_Y, CENTRE_Z);
+
 	public TheEntity(EntityType<? extends TheEntity> type, World world) {
 		super(type, world);
 
@@ -346,9 +359,20 @@ public class TheEntity extends MobEntity {
 
 	/** Puts a fresh one over the middle of the disc, at full health, at the top of the intro. */
 	public void begin() {
+		// An empty arena, first, because this is a fight starting over rather than one continuing. What
+		// gets left behind is the half of an attack that is made of real entities - the archers, the
+		// wanderers, the beams - which are cleaned up by the attack that made them at every seam and on
+		// every ending, and are only ever still standing if none of those ever got to run: a server
+		// stopped mid-attack, or the arena unloading out from under a party that had just been wiped.
+		// See Attacks#sweep.
+		if (this.getWorld() instanceof ServerWorld world) {
+			Attacks.sweep(world);
+		}
+
 		this.refreshPositionAndAngles(CENTRE_X, INTRO_Y, CENTRE_Z, 0.0F, SKY_PITCH);
 		this.setHealth(MAX_HEALTH);
 		this.deathTicks = 0;
+		this.diedAt = new Vec3d(CENTRE_X, GROUND_Y, CENTRE_Z);
 		faceSky();
 		enter(Phase.INTRO, TheEntityPayload.Track.START, false);
 	}
@@ -461,12 +485,14 @@ public class TheEntity extends MobEntity {
 					1, 0.0, 0.0, 0.0, 0.0);
 		}
 
-		// Dropped over the whole ten seconds rather than in one lump, and at the floor rather than at
-		// its feet - by the end its feet are twenty blocks up and the orbs would spend the next minute
-		// falling through the fight that is already over.
+		// Dropped over the whole ten seconds rather than in one lump, and on the floor under where it
+		// was standing when it took the last hit - not at its feet, which by the end are twenty blocks
+		// up and would have the orbs spend the next minute falling through a fight that is over, and
+		// not at the middle of the disc either. It is killed on the ground, in the open, wherever the
+		// last fifteen seconds happened to have chased it to, and that spot is where the fight ended;
+		// walking to the centre for the reward is walking away from the thing you just killed.
 		if (this.deathTicks % XP_EVERY == 0) {
-			ExperienceOrbEntity.spawn(world, new Vec3d(CENTRE_X, GROUND_Y, CENTRE_Z),
-					DEATH_XP / (DEATH_TICKS / XP_EVERY));
+			ExperienceOrbEntity.spawn(world, this.diedAt, DEATH_XP / (DEATH_TICKS / XP_EVERY));
 		}
 
 		if (this.deathTicks >= DEATH_TICKS) {
@@ -474,9 +500,9 @@ public class TheEntity extends MobEntity {
 			// so that this and {@code /blank exit} open exactly the same door.
 			TempleGate.openExit(world);
 
-			// Nothing else takes its place while the people who killed it are standing there. The disc
-			// has to be left empty before there is another one - see TheEntityFight.
-			TheEntityFight.beaten();
+			// And that is the last one. Nothing is ever put on this disc again - see BlankVictory, which
+			// is the only part of a fight that is written down.
+			TheEntityFight.won(world);
 
 			// One of the two real endings, and the reason this is a call rather than something done in
 			// remove(): the bar has to come down for the winners, who are still standing there.
@@ -1087,18 +1113,12 @@ public class TheEntity extends MobEntity {
 
 		// Who has the bar is settled every tick, not on the heartbeat, and the reason is one player
 		// dying while the others fight on. That is the moment the bar has to go from their screen, and
-		// it has to go while they are still the player the server is holding - the instant they click
-		// respawn they become a different object in a different world and this loop can no longer see
-		// them at all. Half a second of lag on that is half a second of a boss bar over a death screen.
-		for (ServerPlayerEntity player : world.getPlayers()) {
-			if (fighting && !player.isSpectator() && player.isAlive()) {
-				TheEntityFight.BAR.addPlayer(player);
-			} else {
-				TheEntityFight.BAR.removePlayer(player);
-			}
-		}
-
-		TheEntityFight.BAR.setVisible(fighting);
+		// half a second of lag on it is half a second of a boss bar over somebody's respawn.
+		//
+		// Which players those are is not decided here. All this says is whether there is a fight; the
+		// list belongs to TheEntityFight, which settles it again every tick from the world rather than
+		// from the boss - including on the ticks after the boss has stopped being asked anything at all.
+		TheEntityFight.showBar(world, fighting);
 
 		if (this.age % HEARTBEAT_TICKS != 0) {
 			return;
@@ -1119,9 +1139,11 @@ public class TheEntity extends MobEntity {
 
 			ServerPlayerEntity gone = world.getServer().getPlayerManager().getPlayer(id);
 
+			// The music and the fog only. The bar they may still be holding is not this loop's to take
+			// back and never was - by the time anybody is missing from here they may be a different
+			// object entirely, which is exactly the case TheEntityFight.prune is built around.
 			if (gone != null) {
 				ServerPlayNetworking.send(gone, TheEntityPayload.off());
-				TheEntityFight.BAR.removePlayer(gone);
 			}
 		}
 
@@ -1202,6 +1224,13 @@ public class TheEntity extends MobEntity {
 		this.phaseTicks = 0;
 		this.deathTicks = 0;
 		this.cue++;
+
+		// Where it was when it was killed, kept now because in a moment it will not be there any more:
+		// the ten seconds it spends going up move it twenty blocks, and what the orbs are marking is the
+		// spot the fight ended at rather than wherever the body has drifted to by the end of the rise.
+		// Flattened onto the floor, because that is where the people it was fighting are standing.
+		this.diedAt = new Vec3d(this.getX(), GROUND_Y, this.getZ());
+
 		this.track = TheEntityPayload.Track.NONE;
 		clearRunning();
 

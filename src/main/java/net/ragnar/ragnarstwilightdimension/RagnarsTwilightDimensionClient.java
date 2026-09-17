@@ -21,6 +21,7 @@ import net.ragnar.ragnarstwilightdimension.client.render.SilhouetteRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.TheEntityRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.WitnessRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.WandererRenderer;
+import net.ragnar.ragnarstwilightdimension.client.render.WatcherRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.TemplePortalRenderer;
 import net.ragnar.ragnarstwilightdimension.block.ModBlocks;
 import net.ragnar.ragnarstwilightdimension.entity.ModEntities;
@@ -43,6 +44,7 @@ public class RagnarsTwilightDimensionClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.GIANT_STEVE, GiantSteveRenderer::new);
         EntityRendererRegistry.register(ModEntities.CHURCH_STEVE, ChurchSteveRenderer::new);
         EntityRendererRegistry.register(ModEntities.EYE, EyeRenderer::new);
+        EntityRendererRegistry.register(ModEntities.WATCHER, WatcherRenderer::new);
         BlockEntityRendererFactories.register(ModBlocks.TEMPLE_PORTAL_ENTITY, TemplePortalRenderer::new);
         ParticleFactoryRegistry.getInstance().register(ModParticles.SLOW_SNOW, SlowSnowParticle.Factory::new);
     }

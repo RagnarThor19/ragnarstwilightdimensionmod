@@ -1,13 +1,18 @@
 package net.ragnar.ragnarstwilightdimension.entity.attack;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.ragnar.ragnarstwilightdimension.entity.BloodSteveEntity;
+import net.ragnar.ragnarstwilightdimension.entity.PaleFigureEntity;
 import net.ragnar.ragnarstwilightdimension.entity.TheEntity;
+import net.ragnar.ragnarstwilightdimension.entity.WandererEntity;
 import net.ragnar.ragnarstwilightdimension.world.dimension.TheBlank;
 
 import java.util.List;
@@ -43,7 +48,12 @@ public final class Attacks {
 			new BeamAttack(),
 			new SteveAttack(),
 			new HoleAttack(),
-			new ArcherAttack());
+			new ArcherAttack(),
+			new ArrowfallAttack(),
+			FrostAttack.hail(),
+			FrostAttack.spikes(),
+			new LanceAttack(),
+			new WatcherAttack());
 
 	/** The height everything on the disc stands at. It is one flat sheet, so this is all of it. */
 	public static final double GROUND_Y = TheBlank.FLOOR_Y + 1;
@@ -124,6 +134,29 @@ public final class Attacks {
 	 */
 	public static void burst(TheEntity boss, ServerWorld world, Vec3d centre,
 							 double radius, float damage, double knockback, double reachUp) {
+		burst(boss, world, centre, radius, damage, knockback, reachUp, 0.0, knockback, 0.0);
+	}
+
+	/**
+	 * The same burst, with a middle that hits harder than its edge.
+	 *
+	 * <p>Only the throw changes and never the damage. The difference between clipping something and
+	 * being directly underneath it ought to be felt in where you end up rather than in a number, because
+	 * where you end up is the only part of a hit a player can read without opening the log - and a
+	 * fight fought on a disc with an edge has somewhere for that reading to matter.
+	 *
+	 * <p>The lift is here because vanilla will not do it. {@code takeKnockback} caps its own vertical
+	 * component at 0.4 for anybody standing on the ground, which is the right number for a sword and a
+	 * useless one for something that fell thirty metres - so the horizontal half of the throw is left
+	 * to vanilla and the vertical half is written onto the velocity afterwards.
+	 *
+	 * @param core          how close to the middle counts as a direct hit. Zero for a burst with no middle.
+	 * @param coreKnockback how hard a direct hit is thrown outwards, in the usual units.
+	 * @param lift          how hard a direct hit is thrown upwards. Everybody else gets half of it.
+	 */
+	public static void burst(TheEntity boss, ServerWorld world, Vec3d centre,
+							 double radius, float damage, double knockback, double reachUp,
+							 double core, double coreKnockback, double lift) {
 		DamageSource source = boss.getDamageSources().mobAttack(boss);
 
 		for (PlayerEntity player : world.getEntitiesByClass(PlayerEntity.class,
@@ -132,17 +165,69 @@ public final class Attacks {
 				candidate -> !candidate.isSpectator() && candidate.isAlive())) {
 			double dx = player.getX() - centre.x;
 			double dz = player.getZ() - centre.z;
+			double away = dx * dx + dz * dz;
 
-			if (dx * dx + dz * dz > radius * radius) {
+			if (away > radius * radius) {
 				continue;
 			}
+
+			boolean direct = away <= core * core;
 
 			player.damage(source, damage);
 
 			// Vanilla's knockback takes the direction of the push and applies the opposite, so what goes
 			// in is the middle of the burst as seen from the player.
-			player.takeKnockback(knockback, -dx, -dz);
+			player.takeKnockback(direct ? coreKnockback : knockback, -dx, -dz);
+
+			if (lift > 0.0) {
+				// Raised to rather than added to, so that two of these landing on somebody in the same
+				// tick throw them once. Twice would be a number nobody chose.
+				Vec3d going = player.getVelocity();
+				player.setVelocity(going.x, Math.max(going.y, direct ? lift : lift * 0.5), going.z);
+			}
+
 			player.velocityModified = true;
 		}
+	}
+
+	/**
+	 * Clears the disc of everything the last fight was in the middle of.
+	 *
+	 * <p>Run once, by the boss, as a new one arrives - see {@code TheEntity#begin} - and it is the
+	 * backstop for the one case none of the ordinary cleanup can reach.
+	 *
+	 * <p>Half of what these attacks throw is particles, which cost nothing and are gone by themselves.
+	 * The other half is real entities: the archers and the figures that fire the beams, the wanderers
+	 * that charge, the blocks the lances are drawn with. Every attack that spawns one takes it back -
+	 * on the tick it is finished, at every phase seam, and again when the fight ends - so in ordinary
+	 * play nothing here ever finds anything. What it is for is the endings that are not calls at all:
+	 * the server stopping mid-attack, or the arena unloading a second after the last player died, both
+	 * of which skip {@code Ongoing#cancel} entirely and write whatever was standing there into the
+	 * chunk. Without this, a party that wipes walks back in to a fresh boss with the last fight's
+	 * archers still standing round it.
+	 *
+	 * <p>Arrows are swept too, except the players' own. One somebody shot ten seconds ago on their way
+	 * in is theirs; the fifteen that came out of an archer belong to a fight that is over.
+	 */
+	public static void sweep(ServerWorld world) {
+		Solid.sweep(world);
+
+		double reach = TheBlank.RADIUS + 8.0;
+		Box arena = new Box(-reach, TheBlank.FLOOR_Y - 8.0, -reach, reach, TheBlank.FLOOR_Y + 64.0, reach);
+
+		for (Entity thing : world.getEntitiesByClass(Entity.class, arena, Attacks::leftOver)) {
+			thing.discard();
+		}
+	}
+
+	/** Whether this is something an attack put there and did not get the chance to take back. */
+	private static boolean leftOver(Entity thing) {
+		if (thing instanceof PersistentProjectileEntity arrow) {
+			return !(arrow.getOwner() instanceof PlayerEntity);
+		}
+
+		return thing instanceof PaleFigureEntity
+				|| thing instanceof WandererEntity
+				|| thing instanceof BloodSteveEntity;
 	}
 }

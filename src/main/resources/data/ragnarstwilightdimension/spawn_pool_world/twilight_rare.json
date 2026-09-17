@@ -1,0 +1,485 @@
+{
+  "enabled": true,
+  "neededInstalledMods": [
+    "cobblemon"
+  ],
+  "neededUninstalledMods": [],
+  "spawns": [
+    {
+      "id": "gengar-twilight-1",
+      "pokemon": "gengar",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "44-58",
+      "weight": 2.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "mismagius-twilight-1",
+      "pokemon": "mismagius",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "dusknoir-twilight-1",
+      "pokemon": "dusknoir",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "44-58",
+      "weight": 2.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "froslass-twilight-1",
+      "pokemon": "froslass",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "chandelure-twilight-1",
+      "pokemon": "chandelure",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "44-58",
+      "weight": 2.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "golurk-twilight-1",
+      "pokemon": "golurk",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "dragapult-twilight-1",
+      "pokemon": "dragapult",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "52-62",
+      "weight": 1.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "polteageist-twilight-1",
+      "pokemon": "polteageist",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "brambleghast-twilight-1",
+      "pokemon": "brambleghast",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "34-50",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "cofagrigus-twilight-1",
+      "pokemon": "cofagrigus",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "spiritomb-twilight-1",
+      "pokemon": "spiritomb",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "30-50",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "mimikyu-twilight-1",
+      "pokemon": "mimikyu",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "28-46",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "zoroark-twilight-1",
+      "pokemon": "zoroark",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 2.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "zorua-hisuian-twilight-1",
+      "pokemon": "zorua hisuian",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "18-36",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "zoroark-hisuian-twilight-1",
+      "pokemon": "zoroark hisuian",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "grimmsnarl-twilight-1",
+      "pokemon": "grimmsnarl",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "40-56",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "bewear-twilight-1",
+      "pokemon": "bewear",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "perrserker-twilight-1",
+      "pokemon": "perrserker",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "32-48",
+      "weight": 3.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "alakazam-twilight-1",
+      "pokemon": "alakazam",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "42-56",
+      "weight": 2.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "metagross-twilight-1",
+      "pokemon": "metagross",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "48-60",
+      "weight": 1.8,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "bastiodon-twilight-1",
+      "pokemon": "bastiodon",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "34-50",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "honchkrow-twilight-1",
+      "pokemon": "honchkrow",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 3.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "snorlax-twilight-1",
+      "pokemon": "snorlax",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-54",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "porygon2-twilight-1",
+      "pokemon": "porygon2",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "sigilyph-twilight-1",
+      "pokemon": "sigilyph",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "32-48",
+      "weight": 3.5,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "annihilape-twilight-1",
+      "pokemon": "annihilape",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "44-58",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "ceruledge-twilight-1",
+      "pokemon": "ceruledge",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "40-56",
+      "weight": 2.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    },
+    {
+      "id": "roserade-twilight-1",
+      "pokemon": "roserade",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "34-50",
+      "weight": 3.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ]
+      }
+    }
+  ]
+}

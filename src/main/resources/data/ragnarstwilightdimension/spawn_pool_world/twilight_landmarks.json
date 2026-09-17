@@ -1,0 +1,455 @@
+{
+  "enabled": true,
+  "neededInstalledMods": [
+    "cobblemon"
+  ],
+  "neededUninstalledMods": [],
+  "spawns": [
+    {
+      "id": "yamask-twilight-landmark",
+      "pokemon": "yamask",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "14-32",
+      "weight": 24.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "cofagrigus-twilight-landmark",
+      "pokemon": "cofagrigus",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 9.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "duskull-twilight-landmark",
+      "pokemon": "duskull",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "common",
+      "level": "12-32",
+      "weight": 26.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "dusclops-twilight-landmark",
+      "pokemon": "dusclops",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-48",
+      "weight": 12.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "greavard-twilight-landmark",
+      "pokemon": "greavard",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "common",
+      "level": "12-30",
+      "weight": 26.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "houndstone-twilight-landmark",
+      "pokemon": "houndstone",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "28-46",
+      "weight": 12.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "phantump-twilight-landmark",
+      "pokemon": "phantump",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "12-30",
+      "weight": 18.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:cobblestone",
+          "minecraft:coarse_dirt",
+          "minecraft:oak_wall_sign"
+        ]
+      }
+    },
+    {
+      "id": "trevenant-twilight-landmark",
+      "pokemon": "trevenant",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "34-50",
+      "weight": 10.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "shuppet-twilight-landmark",
+      "pokemon": "shuppet",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "common",
+      "level": "10-28",
+      "weight": 22.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "banette-twilight-landmark",
+      "pokemon": "banette",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "30-46",
+      "weight": 12.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "pumpkaboo-twilight-landmark",
+      "pokemon": "pumpkaboo",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "18-36",
+      "weight": 16.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "gourgeist-twilight-landmark",
+      "pokemon": "gourgeist",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "34-50",
+      "weight": 9.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "mimikyu-twilight-landmark",
+      "pokemon": "mimikyu",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "28-46",
+      "weight": 6.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_log",
+          "minecraft:oak_leaves"
+        ],
+        "canSeeSky": false
+      }
+    },
+    {
+      "id": "spiritomb-twilight-landmark",
+      "pokemon": "spiritomb",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "30-50",
+      "weight": 8.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_planks"
+        ]
+      }
+    },
+    {
+      "id": "golett-twilight-landmark",
+      "pokemon": "golett",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "20-38",
+      "weight": 18.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_planks"
+        ]
+      }
+    },
+    {
+      "id": "golurk-twilight-landmark",
+      "pokemon": "golurk",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "38-54",
+      "weight": 10.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_planks"
+        ]
+      }
+    },
+    {
+      "id": "sigilyph-twilight-landmark",
+      "pokemon": "sigilyph",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "32-48",
+      "weight": 10.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_planks"
+        ]
+      }
+    },
+    {
+      "id": "claydol-twilight-landmark",
+      "pokemon": "claydol",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "34-50",
+      "weight": 12.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:oak_planks"
+        ]
+      }
+    },
+    {
+      "id": "sinistea-twilight-landmark",
+      "pokemon": "sinistea",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "12-30",
+      "weight": 20.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:chest"
+        ]
+      }
+    },
+    {
+      "id": "polteageist-twilight-landmark",
+      "pokemon": "polteageist",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "rare",
+      "level": "36-52",
+      "weight": 8.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:chest"
+        ]
+      }
+    },
+    {
+      "id": "klefki-twilight-landmark",
+      "pokemon": "klefki",
+      "type": "pokemon",
+      "context": "grounded",
+      "bucket": "uncommon",
+      "level": "22-40",
+      "weight": 14.0,
+      "condition": {
+        "dimensions": [
+          "ragnarstwilightdimension:twilight"
+        ],
+        "biomes": [
+          "ragnarstwilightdimension:twilight_plains"
+        ],
+        "neededNearbyBlocks": [
+          "minecraft:chest"
+        ]
+      }
+    }
+  ]
+}
