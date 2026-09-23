@@ -1,0 +1,15 @@
+{
+	"structures": [
+		{
+			"structure": "ragnarstwilightdimension:bottom_ruin",
+			"weight": 1
+		}
+	],
+	"placement": {
+		"type": "minecraft:random_spread",
+		"spread_type": "linear",
+		"spacing": 64,
+		"separation": 32,
+		"salt": 602881447
+	}
+}

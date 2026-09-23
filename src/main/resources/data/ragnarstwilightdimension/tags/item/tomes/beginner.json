@@ -1,0 +1,23 @@
+{
+	"values": [
+		{ "id": "ragnarsmagicmod:tome_aegis", "required": false },
+		{ "id": "ragnarsmagicmod:tome_arrow_volley", "required": false },
+		{ "id": "ragnarsmagicmod:tome_charged_wind", "required": false },
+		{ "id": "ragnarsmagicmod:tome_falling_stalactite", "required": false },
+		{ "id": "ragnarsmagicmod:tome_fangs", "required": false },
+		{ "id": "ragnarsmagicmod:tome_growth", "required": false },
+		{ "id": "ragnarsmagicmod:tome_ice_shards", "required": false },
+		{ "id": "ragnarsmagicmod:tome_insight", "required": false },
+		{ "id": "ragnarsmagicmod:tome_invisibility", "required": false },
+		{ "id": "ragnarsmagicmod:tome_light", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_boulders", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_fireballs", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_pulling", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_torches", "required": false },
+		{ "id": "ragnarsmagicmod:tome_pushback", "required": false },
+		{ "id": "ragnarsmagicmod:tome_skulls", "required": false },
+		{ "id": "ragnarsmagicmod:tome_swapping", "required": false },
+		{ "id": "ragnarsmagicmod:tome_tracking", "required": false },
+		{ "id": "ragnarsmagicmod:tome_vortex", "required": false }
+	]
+}

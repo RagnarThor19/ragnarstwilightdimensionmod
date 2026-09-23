@@ -1,0 +1,22 @@
+{
+	"values": [
+		{ "id": "ragnarsmagicmod:tome_dashing", "required": false },
+		{ "id": "ragnarsmagicmod:tome_energy", "required": false },
+		{ "id": "ragnarsmagicmod:tome_falling_anvils", "required": false },
+		{ "id": "ragnarsmagicmod:tome_ghastfire", "required": false },
+		{ "id": "ragnarsmagicmod:tome_ghoststep", "required": false },
+		{ "id": "ragnarsmagicmod:tome_gravity", "required": false },
+		{ "id": "ragnarsmagicmod:tome_impaling", "required": false },
+		{ "id": "ragnarsmagicmod:tome_lightning", "required": false },
+		{ "id": "ragnarsmagicmod:tome_mining", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_smashing", "required": false },
+		{ "id": "ragnarsmagicmod:tome_pushing", "required": false },
+		{ "id": "ragnarsmagicmod:tome_raining_arrows", "required": false },
+		{ "id": "ragnarsmagicmod:tome_randomness", "required": false },
+		{ "id": "ragnarsmagicmod:tome_recalling", "required": false },
+		{ "id": "ragnarsmagicmod:tome_rejuvenation", "required": false },
+		{ "id": "ragnarsmagicmod:tome_rising_spikes", "required": false },
+		{ "id": "ragnarsmagicmod:tome_steve", "required": false },
+		{ "id": "ragnarsmagicmod:tome_zap", "required": false }
+	]
+}

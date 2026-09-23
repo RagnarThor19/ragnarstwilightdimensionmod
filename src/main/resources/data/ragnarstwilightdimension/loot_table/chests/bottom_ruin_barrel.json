@@ -1,0 +1,177 @@
+{
+	"type": "minecraft:chest",
+	"pools": [
+		{
+			"rolls": { "type": "minecraft:uniform", "min": 3.0, "max": 6.0 },
+			"bonus_rolls": 0.0,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:dragon_breath",
+					"weight": 10,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 6.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:lingering_potion",
+					"weight": 6,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:strong_healing" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:lingering_potion",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:strong_regeneration" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:splash_potion",
+					"weight": 6,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:long_fire_resistance" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:potion",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:long_night_vision" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:potion",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:strong_strength" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:potion",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:long_slow_falling" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:potion",
+					"weight": 3,
+					"functions": [{ "function": "minecraft:set_potion", "id": "minecraft:long_turtle_master" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:tipped_arrow",
+					"weight": 5,
+					"functions": [
+						{ "function": "minecraft:set_potion", "id": "minecraft:strong_harming" },
+						{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 4.0, "max": 12.0 } }
+					]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:ominous_bottle", "weight": 3 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:shulker_shell",
+					"weight": 3,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 2.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:phantom_membrane",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 5.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:breeze_rod",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:wind_charge",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 4.0, "max": 12.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:blaze_rod",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 5.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:ghast_tear",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 3.0 } }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:rabbit_foot", "weight": 4 },
+				{ "type": "minecraft:item", "name": "minecraft:nautilus_shell", "weight": 3 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:prismarine_crystals",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3.0, "max": 8.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:glow_ink_sac",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 6.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:amethyst_shard",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3.0, "max": 10.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:firework_rocket",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 4.0, "max": 16.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:experience_bottle",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3.0, "max": 10.0 } }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:name_tag", "weight": 3 },
+				{ "type": "minecraft:item", "name": "minecraft:saddle", "weight": 2 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:goat_horn",
+					"weight": 2,
+					"functions": [{ "function": "minecraft:set_instrument", "options": "#minecraft:goat_horns" }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:trial_key", "weight": 2 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond",
+					"weight": 3,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 2.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:golden_carrot",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3.0, "max": 8.0 } }]
+				}
+			]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/beginner", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.1 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/advanced", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.1 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/master", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.01 }]
+		}
+	],
+	"random_sequence": "ragnarstwilightdimension:chests/bottom_ruin_barrel"
+}

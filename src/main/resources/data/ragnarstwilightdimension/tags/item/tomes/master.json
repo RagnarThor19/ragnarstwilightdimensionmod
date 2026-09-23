@@ -1,0 +1,15 @@
+{
+	"values": [
+		{ "id": "ragnarsmagicmod:tome_blinking", "required": false },
+		{ "id": "ragnarsmagicmod:tome_booming", "required": false },
+		{ "id": "ragnarsmagicmod:tome_dragon_breath", "required": false },
+		{ "id": "ragnarsmagicmod:tome_freezing", "required": false },
+		{ "id": "ragnarsmagicmod:tome_ice_beam", "required": false },
+		{ "id": "ragnarsmagicmod:tome_lightning_cascade", "required": false },
+		{ "id": "ragnarsmagicmod:tome_meteor", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_clouds", "required": false },
+		{ "id": "ragnarsmagicmod:tome_of_the_void", "required": false },
+		{ "id": "ragnarsmagicmod:tome_sonic_boom", "required": false },
+		{ "id": "ragnarsmagicmod:tome_sun", "required": false }
+	]
+}

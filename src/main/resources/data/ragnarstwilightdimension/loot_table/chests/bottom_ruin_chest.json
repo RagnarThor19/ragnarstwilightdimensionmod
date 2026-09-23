@@ -1,0 +1,136 @@
+{
+	"type": "minecraft:chest",
+	"pools": [
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond",
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3.0, "max": 8.0 } }]
+				}
+			],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.85 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:golden_apple",
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 5.0 } }]
+				}
+			],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.75 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:emerald",
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 6.0, "max": 16.0 } }]
+				}
+			],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.75 }]
+		},
+		{
+			"rolls": { "type": "minecraft:uniform", "min": 3.0, "max": 5.0 },
+			"bonus_rolls": 0.0,
+			"entries": [
+				{ "type": "minecraft:item", "name": "minecraft:enchanted_golden_apple", "weight": 4 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:netherite_scrap",
+					"weight": 8,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 3.0 } }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:netherite_ingot", "weight": 3 },
+				{ "type": "minecraft:item", "name": "minecraft:netherite_upgrade_smithing_template", "weight": 5 },
+				{ "type": "minecraft:item", "name": "minecraft:totem_of_undying", "weight": 5 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:book",
+					"weight": 10,
+					"functions": [{ "function": "minecraft:enchant_randomly" }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:book",
+					"weight": 8,
+					"functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 30.0, "max": 39.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_sword",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 30.0, "max": 39.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_pickaxe",
+					"weight": 4,
+					"functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 30.0, "max": 39.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_chestplate",
+					"weight": 3,
+					"functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 30.0, "max": 39.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:diamond_helmet",
+					"weight": 3,
+					"functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 30.0, "max": 39.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:ender_pearl",
+					"weight": 8,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 4.0, "max": 12.0 } }]
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:experience_bottle",
+					"weight": 8,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 8.0, "max": 24.0 } }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:heart_of_the_sea", "weight": 3 },
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:echo_shard",
+					"weight": 5,
+					"functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 5.0 } }]
+				},
+				{ "type": "minecraft:item", "name": "minecraft:heavy_core", "weight": 1 },
+				{ "type": "minecraft:item", "name": "minecraft:nether_star", "weight": 1 },
+				{ "type": "minecraft:item", "name": "minecraft:elytra", "weight": 1 },
+				{ "type": "minecraft:item", "name": "minecraft:music_disc_pigstep", "weight": 2 },
+				{ "type": "minecraft:item", "name": "minecraft:silence_armor_trim_smithing_template", "weight": 1 }
+			]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/beginner", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.25 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/advanced", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.5 }]
+		},
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"entries": [{ "type": "minecraft:tag", "name": "ragnarstwilightdimension:tomes/master", "expand": true }],
+			"conditions": [{ "condition": "minecraft:random_chance", "chance": 0.15 }]
+		}
+	],
+	"random_sequence": "ragnarstwilightdimension:chests/bottom_ruin_chest"
+}

@@ -20,6 +20,7 @@ public final class ModSounds {
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_2 = register("music.twilight_2");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_3 = register("music.twilight_3");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_4 = register("music.twilight_4");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_TWILIGHT_5 = register("music.twilight_5");
 
 	/** The blood moon track. Replaces the ordinary playlist for as long as the event is up. */
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_BLOODMOON = register("music.bloodmoon");

@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:jigsaw",
+	"biomes": "#ragnarstwilightdimension:has_structure/bottom_ruin",
+	"step": "underground_structures",
+	"terrain_adaptation": "none",
+	"spawn_overrides": {},
+	"start_pool": "ragnarstwilightdimension:bottom_ruin/start",
+	"size": 1,
+	"start_height": {
+		"absolute": -63
+	},
+	"use_expansion_hack": false,
+	"max_distance_from_center": 80
+}
