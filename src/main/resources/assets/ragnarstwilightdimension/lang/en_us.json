@@ -5,5 +5,8 @@
 	"entity.ragnarstwilightdimension.the_entity": "The Entity",
 	"block.ragnarstwilightdimension.temple_portal": "Temple Portal",
 	"entity.ragnarstwilightdimension.eye": "Eye",
-	"entity.ragnarstwilightdimension.watcher": "Watcher"
+	"entity.ragnarstwilightdimension.watcher": "Watcher",
+	"block.ragnarstwilightdimension.rose": "Rose",
+	"block.ragnarstwilightdimension.potted_rose": "Potted Rose",
+	"entity.ragnarstwilightdimension.stuck_player": "Player"
 }

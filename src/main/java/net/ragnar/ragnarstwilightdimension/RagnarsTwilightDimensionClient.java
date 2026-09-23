@@ -1,6 +1,8 @@
 package net.ragnar.ragnarstwilightdimension;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.ragnar.ragnarstwilightdimension.client.BloodMoonClient;
@@ -20,6 +22,7 @@ import net.ragnar.ragnarstwilightdimension.client.render.DeepSteveRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.GiantSteveRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.PaleFigureRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.SilhouetteRenderer;
+import net.ragnar.ragnarstwilightdimension.client.render.StuckPlayerRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.TheEntityRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.WitnessRenderer;
 import net.ragnar.ragnarstwilightdimension.client.render.WandererRenderer;
@@ -49,7 +52,9 @@ public class RagnarsTwilightDimensionClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.CHURCH_STEVE, ChurchSteveRenderer::new);
         EntityRendererRegistry.register(ModEntities.EYE, EyeRenderer::new);
         EntityRendererRegistry.register(ModEntities.WATCHER, WatcherRenderer::new);
+        EntityRendererRegistry.register(ModEntities.STUCK_PLAYER, StuckPlayerRenderer::new);
         BlockEntityRendererFactories.register(ModBlocks.TEMPLE_PORTAL_ENTITY, TemplePortalRenderer::new);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), ModBlocks.ROSE, ModBlocks.POTTED_ROSE);
         ParticleFactoryRegistry.getInstance().register(ModParticles.SLOW_SNOW, SlowSnowParticle.Factory::new);
     }
 }

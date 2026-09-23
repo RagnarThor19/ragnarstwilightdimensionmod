@@ -37,7 +37,9 @@
 		[],
 		[
 			"ragnarstwilightdimension:log_grove",
-			"ragnarstwilightdimension:twilight_snow_oak"
+			"ragnarstwilightdimension:twilight_snow_oak",
+			"ragnarstwilightdimension:end_platform",
+			"ragnarstwilightdimension:stuck_player"
 		],
 		[]
 	]

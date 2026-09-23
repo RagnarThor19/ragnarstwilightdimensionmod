@@ -69,6 +69,16 @@ public final class ModFeatures {
 			Identifier.of(RagnarsTwilightDimension.MOD_ID, "uplift"),
 			new FaultFeature(DefaultFeatureConfig.CODEC, FaultFeature.Kind.UPLIFT));
 
+	/**
+	 * The figure a quarter of the way into the ground. Referenced by
+	 * {@code worldgen/configured_feature/stuck_player.json} and placed very rarely by
+	 * {@code worldgen/placed_feature/stuck_player.json}, in both biomes.
+	 */
+	public static final Feature<DefaultFeatureConfig> STUCK_PLAYER = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "stuck_player"),
+			new StuckPlayerFeature(DefaultFeatureConfig.CODEC));
+
 	private ModFeatures() {
 	}
 

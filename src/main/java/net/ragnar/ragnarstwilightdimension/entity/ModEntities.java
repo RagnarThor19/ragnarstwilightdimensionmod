@@ -211,6 +211,20 @@ public final class ModEntities {
 					.disableSummon()
 					.build("deep_steve"));
 
+	/**
+	 * The one a quarter of the way into the ground with a placeholder for a name. Placed by worldgen,
+	 * once, by {@code StuckPlayerFeature}. Left summonable, like the churchgoer, because its whole
+	 * point is how it looks. A summoned one stands on the surface; summon it at {@code ~ ~-0.45 ~} to
+	 * see it the way the world places it.
+	 */
+	public static final EntityType<StuckPlayerEntity> STUCK_PLAYER = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "stuck_player"),
+			EntityType.Builder.create(StuckPlayerEntity::new, SpawnGroup.MISC)
+					.dimensions(StuckPlayerEntity.WIDTH, StuckPlayerEntity.HEIGHT)
+					.maxTrackingRange(8)
+					.build("stuck_player"));
+
 	private ModEntities() {
 	}
 
@@ -224,5 +238,6 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(GIANT_STEVE, GiantSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(DEEP_STEVE, DeepSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(CHURCH_STEVE, ChurchSteveEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(STUCK_PLAYER, StuckPlayerEntity.createAttributes());
 	}
 }

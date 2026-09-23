@@ -41,7 +41,10 @@
 			"ragnarstwilightdimension:twilight_grass",
 			"ragnarstwilightdimension:gravestone",
 			"ragnarstwilightdimension:open_grave",
-			"ragnarstwilightdimension:pillar"
+			"ragnarstwilightdimension:pillar",
+			"ragnarstwilightdimension:end_platform",
+			"ragnarstwilightdimension:rose_patch",
+			"ragnarstwilightdimension:stuck_player"
 		],
 		[]
 	]

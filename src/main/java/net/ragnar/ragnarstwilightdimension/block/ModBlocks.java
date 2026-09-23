@@ -1,17 +1,26 @@
 package net.ragnar.ragnarstwilightdimension.block;
 
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroups;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.ragnar.ragnarstwilightdimension.RagnarsTwilightDimension;
 
 /**
- * The mod's blocks. There is one, and it is not something anybody can hold: the temple portal is
+ * The mod's blocks. The temple portal is not something anybody can hold: it is
  * placed by {@code TempleGate} and by the end of the fight, and has no item, no recipe and no way to
  * be broken.
  */
@@ -42,11 +51,32 @@ public final class ModBlocks {
 			id("temple_portal"),
 			BlockEntityType.Builder.create(TemplePortalBlockEntity::new, TEMPLE_PORTAL).build(null));
 
+	/**
+	 * The rose, as it was before 1.7 replaced it with the poppy: same name, same look. It has
+	 * the poppy's settings and suspicious-stew effect, since that is what the game turned it into.
+	 */
+	public static final Block ROSE = Registry.register(
+			Registries.BLOCK,
+			id("rose"),
+			new FlowerBlock(StatusEffects.NIGHT_VISION, 5.0F, AbstractBlock.Settings.copy(Blocks.POPPY)));
+
+	/** The rose in a flower pot. Constructing it is what tells vanilla's empty pot it can hold a rose. */
+	public static final Block POTTED_ROSE = Registry.register(
+			Registries.BLOCK,
+			id("potted_rose"),
+			new FlowerPotBlock(ROSE, AbstractBlock.Settings.copy(Blocks.POTTED_POPPY)));
+
+	public static final Item ROSE_ITEM = Registry.register(
+			Registries.ITEM,
+			id("rose"),
+			new BlockItem(ROSE, new Item.Settings()));
+
 	private ModBlocks() {
 	}
 
-	/** Touching the class runs the initialisers above; there is nothing else to do. */
+	/** Touching the class runs the initialisers above. The rose also goes next to the poppy in the creative menu. */
 	public static void initialize() {
+		ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register(entries -> entries.addAfter(Items.POPPY, ROSE_ITEM));
 	}
 
 	private static Identifier id(String path) {
