@@ -1,0 +1,43 @@
+Two files go in this folder, both .ogg (Vorbis), both next to stare.ogg.
+
+
+deep.ogg  -  the figure in the bedrock layer
+
+    MONO. Not negotiable. The game plays a stereo file flat, with no direction and no
+    falloff, and working out which way it is coming from is the only thing a player has
+    to go on in the ten seconds between one beat and the next.
+
+    Exactly 10 seconds, and seamless end to end. The client loops it head-to-tail with no
+    gap (DeepSteveSound), so silence or a fade at either end will tick audibly every ten
+    seconds and give the loop away.
+
+    NORMALISE IT so it peaks near 0 dBFS, and make it the loudest thing in the mod. This
+    is the one number that cannot be fixed from code: a sound source is clamped at gain
+    1.0 however loud the game is asked to play it, so how much it hurts at five blocks is
+    entirely a property of this file. If it is quiet here it is quiet everywhere.
+
+    How it will be heard, with attenuation_distance 256 (already set in sounds.json):
+
+        150 blocks - the moment it appears -   about 41%   present, placeable, not yet a problem
+         30 blocks -    one beat from death -  about 88%
+          5 blocks -        it kills you    -  about 98%   full strength, in your face
+
+    So the loudness curve is already handled. What the file needs to be is something that
+    is obviously, immediately wrong at 41% and unbearable at 98%.
+
+
+heartbeat.ogg  -  one beat, every ten seconds, while under y=0
+
+    STEREO, and the odd one out in this mod for it. This is played at the listener with no
+    position at all - it is not a sound in the room that happens to be near you, it is your
+    own pulse, and it must not get quieter when you walk away from anything.
+
+    SHORT. A beat, not a bed - it fires every ten seconds and anything running longer than
+    a second or two will still be playing when the fog closes.
+
+    Each one of these is also the moment the fog goes transparent for exactly one second, so
+    the transient wants to be sharp: the beat and the reveal land on the same frame.
+
+
+Neither file existing is not a crash. The game logs a missing-sound warning and plays
+nothing, so everything else - the beat, the fog, the figure, the death - still works.

@@ -3,8 +3,8 @@
 	"temperature": 0.8,
 	"downfall": 0.4,
 	"effects": {
-		"sky_color": 8817536,
-		"fog_color": 8817536,
+		"sky_color": 9410441,
+		"fog_color": 9410441,
 		"grass_color": 9021539,
 		"foliage_color": 7967834,
 		"water_color": 4159204,
@@ -37,11 +37,7 @@
 		[],
 		[
 			"ragnarstwilightdimension:log_grove",
-			"ragnarstwilightdimension:twilight_oak",
-			"ragnarstwilightdimension:twilight_grass",
-			"ragnarstwilightdimension:gravestone",
-			"ragnarstwilightdimension:open_grave",
-			"ragnarstwilightdimension:pillar"
+			"ragnarstwilightdimension:twilight_snow_oak"
 		],
 		[]
 	]

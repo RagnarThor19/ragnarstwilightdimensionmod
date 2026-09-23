@@ -232,5 +232,23 @@
 				"attenuation_distance": 250
 			}
 		]
+	},
+	"event.deep": {
+		"category": "hostile",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:event/deep",
+				"stream": true,
+				"attenuation_distance": 256
+			}
+		]
+	},
+	"event.heartbeat": {
+		"category": "hostile",
+		"sounds": [
+			{
+				"name": "ragnarstwilightdimension:event/heartbeat"
+			}
+		]
 	}
 }

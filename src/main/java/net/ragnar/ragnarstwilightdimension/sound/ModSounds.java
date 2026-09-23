@@ -149,6 +149,42 @@ public final class ModSounds {
 	 */
 	public static final RegistryEntry.Reference<SoundEvent> BELL = registerRanged("ambience.bell", BELL_RANGE);
 
+	/**
+	 * How far the figure in the bedrock layer carries, in blocks. Same two-places-to-keep-in-sync
+	 * arrangement as the others - here, and {@code attenuation_distance} in {@code sounds.json}.
+	 *
+	 * <p>Chosen against the distances {@code TheDeep} uses rather than for atmosphere. It is put down
+	 * a hundred and fifty blocks away, so at 256 the first thing anybody hears of it is at about
+	 * forty per cent - present, placeable, and not yet a problem. By thirty blocks it is at
+	 * eighty-eight, and at the five where it kills you it is effectively at full strength.
+	 */
+	public static final float DEEP_RANGE = 256.0F;
+
+	/**
+	 * The ten seconds that loop off the figure the whole time it is standing there. One file:
+	 * {@code sounds/event/deep.ogg}, and it must be <b>mono</b> - the game plays a stereo file flat,
+	 * with no direction and no falloff, and knowing which way it is coming from is the only thing a
+	 * player has to go on between beats.
+	 *
+	 * <p>Played by the client as a looping instance rather than fired by the server, so it wants to be
+	 * seamless end to end: a file that starts or ends on silence will tick audibly every ten seconds.
+	 * See {@code DeepSteveSound}.
+	 *
+	 * <p>Loudness is the file's job and cannot be fixed from here - a source is clamped at gain 1.0
+	 * however loud the code asks for. Normalise it so it peaks near 0 dBFS.
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> DEEP = registerRanged("event.deep", DEEP_RANGE);
+
+	/**
+	 * One beat, every ten seconds, for as long as somebody is under the world.
+	 *
+	 * <p>The odd one out in this class: it is played at the listener with no position at all, so
+	 * unlike every other effect here it wants to be <b>stereo</b>. It is not a sound in the room that
+	 * happens to be near you, it is your own pulse, and it must not get quieter when you walk.
+	 * {@code sounds/event/heartbeat.ogg}, and short - a beat, not a bed.
+	 */
+	public static final RegistryEntry.Reference<SoundEvent> HEARTBEAT = register("event.heartbeat");
+
 	private ModSounds() {
 	}
 

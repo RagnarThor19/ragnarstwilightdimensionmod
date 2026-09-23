@@ -39,6 +39,36 @@ public final class ModFeatures {
 			Identifier.of(RagnarsTwilightDimension.MOD_ID, "pillar"),
 			new PillarFeature(DefaultFeatureConfig.CODEC));
 
+	/**
+	 * The stand of bare oak columns. Referenced by {@code worldgen/configured_feature/log_grove.json}
+	 * and placed by {@code worldgen/placed_feature/log_grove.json}, in both of the dimension's biomes -
+	 * it is not the snowfield's, it is the dimension's, and finding the same wrong thing in a biome
+	 * that is otherwise nothing like the first one is the point of it.
+	 */
+	public static final Feature<DefaultFeatureConfig> LOG_GROVE = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "log_grove"),
+			new LogGroveFeature(DefaultFeatureConfig.CODEC));
+
+	/**
+	 * The ten-by-ten square that fell out of the world. Referenced by
+	 * {@code worldgen/configured_feature/subsidence.json} and placed in {@code raw_generation}, before
+	 * anything has been planted on the ground it takes away.
+	 */
+	public static final Feature<DefaultFeatureConfig> SUBSIDENCE = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "subsidence"),
+			new FaultFeature(DefaultFeatureConfig.CODEC, FaultFeature.Kind.SUBSIDENCE));
+
+	/**
+	 * The same square, twenty blocks the other way. Same class, same checks, same edges - the two are
+	 * one fault read in opposite directions and are meant to be recognised as a pair.
+	 */
+	public static final Feature<DefaultFeatureConfig> UPLIFT = Registry.register(
+			Registries.FEATURE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "uplift"),
+			new FaultFeature(DefaultFeatureConfig.CODEC, FaultFeature.Kind.UPLIFT));
+
 	private ModFeatures() {
 	}
 

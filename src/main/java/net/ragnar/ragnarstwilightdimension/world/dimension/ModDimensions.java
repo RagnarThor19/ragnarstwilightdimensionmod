@@ -24,6 +24,14 @@ public final class ModDimensions {
 			RegistryKey.of(RegistryKeys.BIOME, id("twilight_plains"));
 
 	/**
+	 * The rare one. Ordinary twilight ground under permanent snowfall that never settles and never
+	 * stops, with the same oaks standing in it - see {@code TwilightSnow} for the fall itself and
+	 * {@code worldgen/biome/twilight_snowfield.json} for the slightly paler fog it is seen through.
+	 */
+	public static final RegistryKey<Biome> TWILIGHT_SNOWFIELD =
+			RegistryKey.of(RegistryKeys.BIOME, id("twilight_snowfield"));
+
+	/**
 	 * The disc the blank one lives on, reached through the temple portal. One circle of snow in the
 	 * dark with nothing else in it - see {@code TheBlank} for the shape and {@code DiscChunkGenerator}
 	 * for how it is generated.

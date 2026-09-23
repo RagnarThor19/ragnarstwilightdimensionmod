@@ -8,6 +8,7 @@ import net.minecraft.client.render.FogShape;
 import net.minecraft.client.world.ClientWorld;
 import net.ragnar.ragnarstwilightdimension.client.BlankFog;
 import net.ragnar.ragnarstwilightdimension.client.BloodMoonClient;
+import net.ragnar.ragnarstwilightdimension.client.DeepClient;
 import net.ragnar.ragnarstwilightdimension.client.StareClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightClient;
 import net.ragnar.ragnarstwilightdimension.client.TwilightFog;
@@ -56,8 +57,21 @@ public class BackgroundRendererMixin {
 		// floats through the same path, so the two events cannot drift apart into "similar" reds, and
 		// the second one inherits the silhouetted-landscape trick described below for free - which is
 		// the entire reason there is anything to see at forty blocks in an eleven-block fog.
-		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightClient.isInTwilight()
-				|| !(BloodMoonClient.isActive() || StareClient.isRed())) {
+		if (camera.getSubmersionType() != CameraSubmersionType.NONE || !TwilightClient.isInTwilight()) {
+			return;
+		}
+
+		// The bedrock layer's beat runs the same trick and is asked first, because somebody under the
+		// world during a blood moon should see the thing standing in the room with them rather than
+		// red. See DeepClient - it is near-black on purpose, and the two must not be confused.
+		if (DeepClient.isRevealing()) {
+			red = DeepClient.FOG_RED;
+			green = DeepClient.FOG_GREEN;
+			blue = DeepClient.FOG_BLUE;
+			return;
+		}
+
+		if (!(BloodMoonClient.isActive() || StareClient.isRed())) {
 			return;
 		}
 

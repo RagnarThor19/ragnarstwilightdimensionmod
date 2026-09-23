@@ -8,6 +8,7 @@ import net.ragnar.ragnarstwilightdimension.block.ModBlocks;
 import net.ragnar.ragnarstwilightdimension.particle.ModParticles;
 import net.ragnar.ragnarstwilightdimension.command.BellCommand;
 import net.ragnar.ragnarstwilightdimension.command.BlankCommand;
+import net.ragnar.ragnarstwilightdimension.command.FaultCommand;
 import net.ragnar.ragnarstwilightdimension.command.BloodMoonCommand;
 import net.ragnar.ragnarstwilightdimension.command.StareCommand;
 import net.ragnar.ragnarstwilightdimension.command.WitnessCommand;
@@ -17,12 +18,14 @@ import net.ragnar.ragnarstwilightdimension.event.Stare;
 import net.ragnar.ragnarstwilightdimension.event.TwilightRespawn;
 import net.ragnar.ragnarstwilightdimension.network.BloodMoonPayload;
 import net.ragnar.ragnarstwilightdimension.network.StarePayload;
+import net.ragnar.ragnarstwilightdimension.network.DeepPayload;
 import net.ragnar.ragnarstwilightdimension.network.TheEntityPayload;
 import net.ragnar.ragnarstwilightdimension.network.WitnessPayload;
 import net.ragnar.ragnarstwilightdimension.entity.SilhouetteSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.WandererSpawner;
 import net.ragnar.ragnarstwilightdimension.entity.BossBarWatch;
 import net.ragnar.ragnarstwilightdimension.entity.WatcherSpawner;
+import net.ragnar.ragnarstwilightdimension.entity.TheDeep;
 import net.ragnar.ragnarstwilightdimension.entity.TheEntityFight;
 import net.ragnar.ragnarstwilightdimension.entity.WitnessSpawner;
 import net.ragnar.ragnarstwilightdimension.portal.TempleGate;
@@ -58,6 +61,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		StarePayload.register();
 		WitnessPayload.register();
 		TheEntityPayload.register();
+		DeepPayload.register();
 		TwilightPortal.register();
 		TempleGate.register();
 		SilhouetteSpawner.register();
@@ -65,6 +69,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		WitnessSpawner.register();
 		WatcherSpawner.register();
 		TheEntityFight.register();
+		TheDeep.register();
 		BossBarWatch.register();
 		TwilightAmbience.register();
 		TwilightLeviathan.register();
@@ -80,6 +85,7 @@ public class RagnarsTwilightDimension implements ModInitializer {
 		BellCommand.register();
 		WitnessCommand.register();
 		BlankCommand.register();
+		FaultCommand.register();
 		LOGGER.info("Twilight dimension loaded ({})", ModDimensions.TWILIGHT_WORLD.getValue());
 	}
 

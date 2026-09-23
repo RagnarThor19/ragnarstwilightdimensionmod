@@ -7,13 +7,20 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.ragnar.ragnarstwilightdimension.particle.ModParticles;
 import net.ragnar.ragnarstwilightdimension.world.dimension.ModDimensions;
 
 /**
- * The snow on the disc.
+ * The snow on the disc, and in the snowfield.
+ *
+ * <p>Two places, one fall. The disc is snow the whole way across; the twilight's snowfield is a rare
+ * biome inside a world that is otherwise dry, and the same flakes are laid over it. They are the same
+ * object on purpose - somebody who has stood on the disc is meant to recognise the snowfield as the
+ * same weather, in a dimension that has no weather, over ground that was never cold. They do not fall
+ * at the same rate: see {@link #SNOWFIELD_FLAKES_PER_TICK}.
  *
  * <p>Not weather. The dimension has no skylight, and vanilla will not run a weather cycle or draw
  * precipitation in a world that has none - and even where it does, the snow it draws falls at a fixed
@@ -43,6 +50,17 @@ public final class TwilightSnow {
 	 */
 	private static final double FLAKES_PER_TICK = 0.4167;
 
+	/**
+	 * What the snowfield gets instead: three and a half times the disc's rate, or about twenty-nine
+	 * flakes a second, settling at something over seven hundred and fifty in the air at once.
+	 *
+	 * <p>The two are not meant to match, and the disc's is the one that must not move. That rate was
+	 * set against a black room with a boss in it, where the snow has to stay thin enough to see an
+	 * attack coming across thirty blocks of it. The snowfield has no such job - it is seen through
+	 * eleven blocks of fog and it is the whole point of the biome, so it is laid on much more heavily.
+	 */
+	private static final double SNOWFIELD_FLAKES_PER_TICK = FLAKES_PER_TICK * 3.5;
+
 	/** How far either side of the player flakes are seeded, in blocks. */
 	private static final double SPREAD = 16.0;
 
@@ -67,20 +85,36 @@ public final class TwilightSnow {
 		ClientWorld world = client.world;
 		Entity camera = client.getCameraEntity();
 
-		if (world == null || camera == null || client.isPaused()
-				|| !ModDimensions.BLANK_WORLD.equals(world.getRegistryKey())) {
+		if (world == null || camera == null || client.isPaused()) {
+			return;
+		}
+
+		boolean blank = ModDimensions.BLANK_WORLD.equals(world.getRegistryKey());
+		boolean twilight = ModDimensions.TWILIGHT_WORLD.equals(world.getRegistryKey());
+
+		if (!blank && !twilight) {
 			return;
 		}
 
 		Vec3d at = camera.getPos();
-		int flakes = flakesThisTick(rateFor(client.options.getParticles().getValue()));
+		double rate = blank ? FLAKES_PER_TICK : SNOWFIELD_FLAKES_PER_TICK;
+		int flakes = flakesThisTick(rateFor(client.options.getParticles().getValue(), rate));
+		BlockPos.Mutable seeded = new BlockPos.Mutable();
 
 		for (int i = 0; i < flakes; i++) {
-			world.addParticle(ModParticles.SLOW_SNOW,
-					at.x + (RANDOM.nextDouble() * 2.0 - 1.0) * SPREAD,
-					at.y + LOWEST + RANDOM.nextDouble() * (HIGHEST - LOWEST),
-					at.z + (RANDOM.nextDouble() * 2.0 - 1.0) * SPREAD,
-					0.0, 0.0, 0.0);
+			double x = at.x + (RANDOM.nextDouble() * 2.0 - 1.0) * SPREAD;
+			double y = at.y + LOWEST + RANDOM.nextDouble() * (HIGHEST - LOWEST);
+			double z = at.z + (RANDOM.nextDouble() * 2.0 - 1.0) * SPREAD;
+
+			// In the twilight the box is asked per flake rather than once for the player, so the fall
+			// stops at the biome line rather than at whichever side of it the camera happens to be on.
+			// Standing outside a snowfield you see it snowing in the snowfield; standing in one you see
+			// it stop over the grass. The edge is hard, and the box thins over it by itself.
+			if (twilight && !world.getBiome(seeded.set(x, y, z)).matchesKey(ModDimensions.TWILIGHT_SNOWFIELD)) {
+				continue;
+			}
+
+			world.addParticle(ModParticles.SLOW_SNOW, x, y, z, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -102,12 +136,13 @@ public final class TwilightSnow {
 	 * <p>Worth doing for something that runs every tick forever: anybody who has turned particles down
 	 * has done it to get frames back, and an ambient effect is exactly what they meant.
 	 *
+	 * @param rate the place's own full rate, which is what ALL gets
 	 * @return flakes per tick, or zero for none at all
 	 */
-	private static double rateFor(ParticlesMode mode) {
+	private static double rateFor(ParticlesMode mode, double rate) {
 		return switch (mode) {
-			case ALL -> FLAKES_PER_TICK;
-			case DECREASED -> FLAKES_PER_TICK / 3.0;
+			case ALL -> rate;
+			case DECREASED -> rate / 3.0;
 			case MINIMAL -> 0.0;
 		};
 	}

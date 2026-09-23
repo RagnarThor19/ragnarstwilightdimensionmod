@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"BlockDisplayAccessor",
+		"ChunkGeneratorAccessor",
 		"DisplayEntityAccessor",
 		"ExampleMixin",
 		"LootableInventoryMixin",

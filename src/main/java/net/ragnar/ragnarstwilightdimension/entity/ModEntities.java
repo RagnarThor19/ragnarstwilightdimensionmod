@@ -191,6 +191,26 @@ public final class ModEntities {
 					.disableSummon()
 					.build("the_entity"));
 
+	/**
+	 * The one in the bedrock layer. Set-piece treatment like the giant - no spawn egg and no
+	 * {@code /summon}, since one placed outside a watch removes itself on its first tick.
+	 *
+	 * <p>The tracking range is load-bearing here in a way it is not for the others. It is given in
+	 * chunks, and {@code TheDeep} puts this a hundred and fifty blocks out; at the default eight
+	 * chunks the client would never be told it exists and the whole event would be a heartbeat and
+	 * nothing else. Sixteen covers the full distance, and {@code TheDeep} clamps its first placement
+	 * to whatever the player's own view distance can actually be shown.
+	 */
+	public static final EntityType<DeepSteveEntity> DEEP_STEVE = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of(RagnarsTwilightDimension.MOD_ID, "deep_steve"),
+			EntityType.Builder.create(DeepSteveEntity::new, SpawnGroup.MISC)
+					.dimensions(DeepSteveEntity.WIDTH, DeepSteveEntity.HEIGHT)
+					.maxTrackingRange(16)
+					.makeFireImmune()
+					.disableSummon()
+					.build("deep_steve"));
+
 	private ModEntities() {
 	}
 
@@ -202,6 +222,7 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(WANDERER, WandererEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(BLOOD_STEVE, BloodSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(GIANT_STEVE, GiantSteveEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(DEEP_STEVE, DeepSteveEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(CHURCH_STEVE, ChurchSteveEntity.createAttributes());
 	}
 }
